@@ -382,6 +382,7 @@ class Choices {
     if (this.containerOuter.isDisabled) {
       this._addEventListeners();
       this.input.enable();
+      this.input.element.focus();
       this.containerOuter.enable();
     }
 
