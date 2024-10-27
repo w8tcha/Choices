@@ -56,6 +56,7 @@ export const mapInputToChoice = <T extends string | InputChoice | InputGroup>(
 
     const result: GroupFull = {
       id: 0, // actual ID will be assigned during _addGroup
+      value: group.value,
       label: unwrapStringForRaw(group.label) || group.value,
       active: !!choices.length,
       disabled: !!group.disabled,

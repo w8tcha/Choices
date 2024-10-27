@@ -734,6 +734,7 @@ class Choices {
             group = {
               ...group,
               label: group[label],
+              value: group[value],
             } as InputGroup;
           }
 

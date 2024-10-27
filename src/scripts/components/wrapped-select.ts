@@ -104,6 +104,7 @@ export default class WrappedSelect extends WrappedElement<HTMLSelectElement> {
     return {
       id: 0,
       label: optgroup.label || '',
+      value: optgroup.value,
       element: optgroup,
       active: !!choices.length,
       disabled: optgroup.disabled,
