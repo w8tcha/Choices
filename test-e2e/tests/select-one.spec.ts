@@ -26,6 +26,31 @@ describe(`Choices - select one`, () => {
           });
         });
 
+        describe('click selected element', () => {
+          test('toggles the dropdown', async ({ page, bundle }) => {
+            const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+            await suite.startWithClick();
+
+            const box = (await suite.itemList.locator('[data-item]').boundingBox())!;
+            await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+            await page.mouse.down();
+            await suite.advanceClock();
+            await suite.expectVisibleDropdown();
+
+            await page.mouse.up();
+            await suite.advanceClock();
+            await suite.expectHiddenDropdown();
+
+            await page.mouse.down();
+            await suite.advanceClock();
+            await suite.expectHiddenDropdown();
+
+            await page.mouse.up();
+            await suite.advanceClock();
+            await suite.expectVisibleDropdown();
+          });
+        });
+
         describe('pressing an alpha-numeric key', () => {
           test('opens the dropdown and the input value', async ({ page, bundle }) => {
             const suite = new SelectTestSuit(page, bundle, testUrl, testId);
@@ -45,6 +70,7 @@ describe(`Choices - select one`, () => {
 
           await suite.choices.first().click();
           await expect(suite.items.last()).toHaveText(selectedChoiceText);
+          await expect(suite.items.last()).not.toHaveText('!--');
         });
 
         test('does not remove selected choice from dropdown list', async ({ page, bundle }) => {
@@ -229,6 +255,57 @@ describe(`Choices - select one`, () => {
           await suite.expectedValue('');
           await suite.expectHiddenDropdown();
         });
+
+        describe('with should sort', () => {
+          test('on', async ({ page, bundle }) => {
+            const suite = new SelectTestSuit(page, bundle, testUrl, 'remove-button-with-sorting-on');
+            await suite.startWithClick();
+            await suite.expectVisibleDropdown();
+
+            await suite.items.getByRole('button', { name: 'Remove item' }).last().click();
+            await suite.advanceClock();
+
+            const firstChoice = suite.choices.first();
+            await expect(firstChoice).toHaveText('Choice 1');
+            const lastChoice = suite.choices.last();
+            await expect(lastChoice).toHaveText('Choice 4');
+
+            await suite.escapeKey();
+            await suite.expectHiddenDropdown();
+          });
+
+          test('off', async ({ page, bundle }) => {
+            const suite = new SelectTestSuit(page, bundle, testUrl, 'remove-button-with-sorting-off');
+            await suite.startWithClick();
+            await suite.expectVisibleDropdown();
+
+            await suite.items.getByRole('button', { name: 'Remove item' }).last().click();
+            await suite.advanceClock();
+
+            const firstChoice = suite.choices.first();
+            await expect(firstChoice).toHaveText('Choice 4');
+            const lastChoice = suite.choices.last();
+            await expect(lastChoice).toHaveText('Choice 1');
+
+            await suite.escapeKey();
+            await suite.expectHiddenDropdown();
+          });
+        });
+      });
+    });
+
+    describe('duplicate-items', () => {
+      test('shows all duplicate items', async ({ page, bundle }) => {
+        const suite = new SelectTestSuit(page, bundle, testUrl, 'duplicate-items-allowed');
+        await suite.startWithClick();
+
+        await expect(suite.selectableChoices).toHaveCount(5);
+      });
+      test('shows unique items', async ({ page, bundle }) => {
+        const suite = new SelectTestSuit(page, bundle, testUrl, 'duplicate-items-disallowed');
+        await suite.startWithClick();
+
+        await expect(suite.selectableChoices).toHaveCount(3);
       });
     });
 
@@ -240,6 +317,15 @@ describe(`Choices - select one`, () => {
 
         await expect(suite.selectableChoices).toHaveCount(0);
         await suite.expectVisibleNoticeHtml('No choices to choose from', true);
+      });
+    });
+
+    describe('Selected choices rendering', () => {
+      test('Skip render selected choices', async ({ page, bundle }) => {
+        const suite = new SelectTestSuit(page, bundle, testUrl, 'renderSelectedChoices-true');
+        await suite.startWithClick();
+
+        await expect(suite.selectableChoices).toHaveCount(1);
       });
     });
 
@@ -495,6 +581,32 @@ describe(`Choices - select one`, () => {
         await expect(firstItem).toHaveClass(/choices__placeholder/);
         await expect(firstItem).toHaveText('I am a placeholder');
         await expect(suite.selectableChoices).toHaveCount(10);
+      });
+
+      const testIdForDisabled = 'remote-disabled-data';
+      test('checking disabled items are shown in dropdown', async ({ page, bundle }) => {
+        const suite = new SelectTestSuit(page, bundle, testUrl, testIdForDisabled);
+
+        const jsonLoad = page.waitForResponse('**/disabled-data.json');
+        const stopJsonWaiting = await suite.delayDisaabledData();
+        await suite.start();
+
+        await expect(suite.itemList.first()).toHaveText('Loading...');
+
+        stopJsonWaiting();
+        await jsonLoad;
+        await suite.selectByClick();
+
+        const firstItem = suite.itemsWithPlaceholder.first();
+        await expect(firstItem).toHaveClass(/choices__placeholder/);
+        await expect(firstItem).toHaveText('I am a placeholder');
+
+        const lastChoice = suite.selectableChoices.last();
+        await expect(lastChoice).toHaveClass(/choices__item--disabled/);
+        await expect(lastChoice).toHaveText('Disabled Label 10');
+
+        await expect(suite.selectableChoices.locator(':not(.choices__item--disabled)')).toHaveCount(0);
+        await expect(suite.selectableChoices.locator('+ .choices__item--disabled')).toHaveCount(9);
       });
     });
 

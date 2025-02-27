@@ -165,6 +165,15 @@ export class TestSuit {
     await expect(this.dropdown).toBeHidden();
   }
 
+  async expectHiddenNotice(singleItem: boolean = false): Promise<void> {
+    await this.advanceClock();
+
+    if (singleItem) {
+      await expect(this.dropdown.locator('> *:not(input)')).toHaveCount(0);
+    }
+    await expect(this.dropdown.locator('.choices__notice')).toBeHidden();
+  }
+
   // eslint-disable-next-line class-methods-use-this
   getWrappedElement(): Locator {
     throw new Error('Not implemented');

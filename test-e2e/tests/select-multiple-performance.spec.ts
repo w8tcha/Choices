@@ -199,6 +199,15 @@ describe(`Choices - select multiple (performance tests)`, () => {
           });
         });
       });
+
+      describe('setting options', () => {
+        test.setTimeout(30000);
+        test('setChoices', async ({ page, bundle }) => {
+          const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+          await suite.startWithClick();
+          await suite.group.locator('button.setChoices').click();
+        });
+      });
     });
   });
 });

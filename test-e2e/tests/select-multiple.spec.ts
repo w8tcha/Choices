@@ -45,6 +45,7 @@ describe(`Choices - select multiple`, () => {
 
           await suite.choices.first().click();
           await expect(suite.items.last()).toHaveText(selectedChoiceText);
+          await expect(suite.items.last()).not.toHaveText('!--');
         });
 
         test('remove selected choice from dropdown list', async ({ page, bundle }) => {
@@ -294,7 +295,7 @@ describe(`Choices - select multiple`, () => {
               await expect(suite.getChoiceWithText(`Choice ${i}`)).toHaveClass(/is-selected/);
               await expect(suite.selectableChoices).toHaveCount(count);
             } else {
-              await suite.expectVisibleNoticeHtml('No choices to choose from', true);
+              await suite.expectHiddenNotice();
             }
           }
         });
@@ -372,6 +373,30 @@ describe(`Choices - select multiple`, () => {
           await suite.escapeKey();
           await suite.expectHiddenDropdown();
         });
+      });
+    });
+
+    describe('duplicate-items', () => {
+      test('shows all duplicate items', async ({ page, bundle }) => {
+        const suite = new SelectTestSuit(page, bundle, testUrl, 'duplicate-items-allowed');
+        await suite.startWithClick();
+
+        await expect(suite.selectableChoices).toHaveCount(5);
+      });
+      test('shows unique items', async ({ page, bundle }) => {
+        const suite = new SelectTestSuit(page, bundle, testUrl, 'duplicate-items-disallowed');
+        await suite.startWithClick();
+
+        await expect(suite.selectableChoices).toHaveCount(3);
+      });
+    });
+
+    describe('Selected choices rendering', () => {
+      test('Render selected choices', async ({ page, bundle }) => {
+        const suite = new SelectTestSuit(page, bundle, testUrl, 'renderSelectedChoices-true');
+        await suite.startWithClick();
+
+        await expect(suite.selectableChoices).toHaveCount(1);
       });
     });
 
@@ -477,11 +502,11 @@ describe(`Choices - select multiple`, () => {
     });
 
     describe('selection limit', () => {
-      const testId = 'selection-limit';
+      const displaysTestId = 'selection-limit';
       const selectionLimit = 5;
 
       test('displays "limit reached" prompt', async ({ page, bundle }) => {
-        const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+        const suite = new SelectTestSuit(page, bundle, testUrl, displaysTestId);
         await suite.startWithClick();
 
         for (let index = 0; index < selectionLimit; index++) {
@@ -490,6 +515,24 @@ describe(`Choices - select multiple`, () => {
         }
 
         await suite.expectVisibleNoticeHtml(`Only ${selectionLimit} values can be added`);
+      });
+
+      const hidesTestId = 'selection-limit-note-after-unselecting-choice';
+      test('hides "limit reached" prompt', async ({ page, bundle }) => {
+        const suite = new SelectTestSuit(page, bundle, testUrl, hidesTestId);
+        await suite.startWithClick();
+
+        for (let index = 0; index < selectionLimit; index++) {
+          await suite.selectableChoices.first().click();
+          await suite.advanceClock();
+        }
+
+        await suite.expectVisibleNoticeHtml(`Only ${selectionLimit} values can be added`);
+
+        await suite.items.getByRole('button', { name: 'Remove item' }).last().click();
+        await suite.advanceClock();
+
+        await suite.expectHiddenNotice();
       });
     });
 

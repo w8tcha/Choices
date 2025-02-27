@@ -49,6 +49,31 @@ export class SelectTestSuit extends TestSuit {
     return stopJsonWaiting;
   }
 
+  async delayDisaabledData(): Promise<() => void> {
+    let stopJsonWaiting = (): void => {};
+    const jsonWaiting = new Promise<void>((f) => {
+      stopJsonWaiting = f;
+    });
+
+    await this.page.route('**/disabled-data.json', async (route) => {
+      await jsonWaiting;
+
+      const fakeData = [...new Array(10)].map((_, index) => ({
+        label: `Disabled Label ${index + 1}`,
+        value: `Disabled Value ${index + 1}`,
+        disabled: true,
+      }));
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(fakeData),
+      });
+    });
+
+    return stopJsonWaiting;
+  }
+
   getWrappedElement(): Locator {
     return this.wrappedSelect;
   }

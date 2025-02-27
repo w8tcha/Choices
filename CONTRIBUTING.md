@@ -18,7 +18,7 @@ For compatibility, `new` and `get` must be pure (side effect free).
 | `npm run css:watch`       | Watch SCSS files for changes. On a change, run build process |
 | `npm run css:build`       | Compile, minify and prefix SCSS files to CSS                 |
 
-## Passing enviromental arguments to rollup
+## Passing environmental arguments to rollup
 
 Use `--` followed by normal rollup `--environment` arguments. The last one overrides any previous ones with the same name
 

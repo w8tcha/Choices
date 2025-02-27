@@ -1,4 +1,6 @@
 export const KeyCodeMap = {
+  TAB_KEY: 9,
+  SHIFT_KEY: 16,
   BACK_KEY: 46,
   DELETE_KEY: 8,
   ENTER_KEY: 13,

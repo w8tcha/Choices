@@ -189,6 +189,10 @@ describe(`Choices - text element`, () => {
 
         expect(await suite.items.count()).toEqual(inputLimit);
         await suite.expectVisibleNoticeHtml(`Only ${inputLimit} values can be added`);
+
+        await suite.typeText(textInput);
+        expect(await suite.items.count()).toEqual(inputLimit);
+        await suite.expectVisibleNoticeHtml(`Only ${inputLimit} values can be added`);
       });
     });
 

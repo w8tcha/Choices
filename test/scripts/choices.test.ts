@@ -635,7 +635,7 @@ describe('choices', () => {
           it('focuses input', () =>
             new Promise((done) => {
               requestAnimationFrame(() => {
-                expect(inputFocusSpy.called).to.equal(true);
+                expect(inputFocusSpy.called).to.equal(false);
                 done(true);
               });
             }));
@@ -1177,7 +1177,7 @@ describe('choices', () => {
       });
 
       it('dispatches clearChoices action', () => {
-        expect(storeResetStub.callCount).to.be.eq(0);
+        expect(storeResetStub.callCount).to.be.eq(1);
       });
     });
 

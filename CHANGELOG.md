@@ -1,9 +1,44 @@
 # Changelog
 
-## [11.0.3]
+## [11.0.6]
+
+### Bug Fixes
+- Revert "Do not preventDefault on item to support dragging" [#1266](https://github.com/Choices-js/Choices/issues/1266) @Xon ([#1282](https://github.com/Choices-js/Choices/issues/1282))
+
+### Chore
+- Add e2e test for dropdown behavior on item mouse down/click
+
+## [11.0.5] (2025-02-26)
+
+### Bug Fixes
+- Fix regression when calling setChoices [#1278](https://github.com/Choices-js/Choices/issues/1278)
+
+## [11.0.4] (2025-02-23)
+
+### Features
+- Do not preventDefault on item to support dragging [#417](https://github.com/Choices-js/Choices/issues/417) [#1094](https://github.com/Choices-js/Choices/issues/1094) [#920](https://github.com/Choices-js/Choices/issues/920)
+
+### Bug Fixes (from 11.0.0)
+- Fix performance regression when calling setChoices [#1275](https://github.com/Choices-js/Choices/issues/1275)
+* Fix `renderSelectedChoices` option when all choices are selected [#1274](https://github.com/Choices-js/Choices/issues/1274)
+* Fix v11 regression for disabled placeholder option handling [#1203](https://github.com/Choices-js/Choices/issues/1203)
+* Fix v11 regression where `clearChoices` (and `setChoices` with `replaceChoices:true`) did not remove selected items when preserving placeholders [#1261](https://github.com/Choices-js/Choices/issues/1261)
+* Fix v11 regression where `duplicateItemsAllowed` option did not work with `select-one`/`select-multiple` [#1271](https://github.com/Choices-js/Choices/issues/1271)
+* Fix: Reached maximum item limit notice is not cleared after removing selections [#1249](https://github.com/Choices-js/Choices/issues/1249)
+* Fix: Disabled options are not visible [#1257](https://github.com/Choices-js/Choices/issues/1257) [#1269](https://github.com/Choices-js/Choices/issues/1257)
+* Fix: Clear button reverses items order [#1251](https://github.com/Choices-js/Choices/issues/1251)
+* Fix `tab` => direction keys handling with disabled search [#1260](https://github.com/Choices-js/Choices/issues/1260)
+* Improve cjs compatibility by removing pinned "module" type in package.json [#1250](https://github.com/Choices-js/Choices/issues/1250)
+
+## [11.0.3] (2024-12-22)
 
 ### Bug Fixes (from 11.0.0)
 * Fix input text - method setValue didn't work [#1207](https://github.com/Choices-js/Choices/issues/1207)
+* Fix `tab` and `esc` keys handling [#1234](https://github.com/Choices-js/Choices/issues/1234) [#1209](https://github.com/Choices-js/Choices/issues/1209)
+* Fix Notice for max item limit is removed permanently if you keep typing [#1201](https://github.com/Choices-js/Choices/issues/1201)
+* Fix search was not stopped when leaving focus with esc key [#1240](https://github.com/Choices-js/Choices/issues/1240)
+* Fix single-select mode disabling search when `tab` => arrow keys are pressed [#1230](https://github.com/Choices-js/Choices/issues/1230)
+* Fix HTML comments were copied from backing `<option>` and were rendered as text [#1231](https://github.com/Choices-js/Choices/issues/1231)
 
 ## [11.0.2] (2024-09-05)
 

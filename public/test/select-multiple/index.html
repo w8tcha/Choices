@@ -66,7 +66,7 @@
             id="choices-basic"
             multiple
           >
-            <option value="Choice 1">Choice 1</option>
+            <option value="Choice 1"><!-- html comment -->Choice 1</option>
             <option value="Choice 2">Choice 2</option>
             <option value="Find me">Choice 3</option>
             <option value="Choice 4">Choice 4</option>
@@ -74,7 +74,7 @@
           <script>
             document.addEventListener('DOMContentLoaded', function() {
               const choicesBasic = new Choices('#choices-basic', {
-                allowHTML: true,
+                allowHTML: false,
               });
               document
                 .querySelector('button.disable')
@@ -87,6 +87,20 @@
                 .addEventListener('click', () => {
                   choicesBasic.enable();
                 });
+            });
+          </script>
+        </div>
+
+        <div data-test-hook="single-item">
+          <label for="choices-basic">Single-item</label>
+          <select class="form-control" name="choices-single-item" id="choices-single-item">
+            <option value="Choice 1">Choice 1</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              new Choices('#choices-single-item', {
+                allowHTML: true,
+              });
             });
           </script>
         </div>
@@ -162,6 +176,56 @@
           </script>
         </div>
 
+        <div data-test-hook="duplicate-items-allowed">
+          <label for="duplicate-items-allowed">Duplicate items allowed</label>
+          <select class="form-control" name="no-choices" id="duplicate-items-allowed" multiple>
+            <option value="call1">Service 1</option>
+            <option value="call2">Service 2</option>
+            <option value="call2">Service 3</option>
+            <option value="call1">Service 4</option>
+            <option value="call5">Service 5</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              new Choices('#duplicate-items-allowed', {
+                duplicateItemsAllowed: true,
+              });
+            });
+          </script>
+        </div>
+
+        <div data-test-hook="duplicate-items-disallowed">
+          <label for="duplicate-items-disallowed">Duplicate items disallowed</label>
+          <select class="form-control" name="no-choices" id="duplicate-items-disallowed" multiple>
+            <option value="call1">Service 1</option>
+            <option value="call2">Service 2</option>
+            <option value="call2">Service 3</option>
+            <option value="call1">Service 4</option>
+            <option value="call5">Service 5</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              new Choices('#duplicate-items-disallowed', {
+                duplicateItemsAllowed: false,
+              });
+            });
+          </script>
+        </div>
+
+        <div data-test-hook="renderSelectedChoices-true">
+          <label for="renderSelectedChoices-true">Render selected choices (single option)</label>
+          <select class="form-control" name="no-choices" id="renderSelectedChoices-true" multiple>
+            <option value="Choice 1" selected>Choice 1</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              new Choices('#renderSelectedChoices-true', {
+                renderSelectedChoices: true,
+              });
+            });
+          </script>
+        </div>
+
         <div data-test-hook="no-choices">
           <label for="no-choices">No choices</label>
           <select class="form-control" name="no-choices" id="no-choices" multiple>
@@ -177,8 +241,8 @@
 
         <div data-test-hook="no-choices2">
           <label for="no-choices2">No choices (besides selected)</label>
-          <select class="form-control" name="no-choices" id="no-choices2">
-            <option value="Choice 1" selected="selected" multiple>Choice 1</option>
+          <select class="form-control" name="no-choices" id="no-choices2" multiple>
+            <option value="Choice 1" selected="selected">Choice 1</option>
           </select>
           <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -316,6 +380,31 @@
               new Choices('#choices-selection-limit', {
                 allowHTML: true,
                 maxItemCount: 5,
+              });
+            });
+          </script>
+        </div>
+
+        <div data-test-hook="selection-limit-note-after-unselecting-choice">
+          <label for="choices-selection-limit-note-after-unselecting-choice">Input limit note after unselecting choice</label>
+          <select
+            class="form-control"
+            name="choices-selection-limit-note-after-unselecting-choice"
+            id="choices-selection-limit-note-after-unselecting-choice"
+            multiple
+          >
+            <option value="Choice 1">Choice 1</option>
+            <option value="Choice 2">Choice 2</option>
+            <option value="Choice 3">Choice 3</option>
+            <option value="Choice 4">Choice 4</option>
+            <option value="Choice 5">Choice 5</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              new Choices('#choices-selection-limit-note-after-unselecting-choice', {
+                allowHTML: true,
+                maxItemCount: 5,
+                removeItemButton: true
               });
             });
           </script>

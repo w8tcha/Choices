@@ -61,7 +61,7 @@
           <button class="disable push-bottom">Disable</button>
           <button class="enable push-bottom">Enable</button>
           <select class="form-control" name="choices-basic" id="choices-basic">
-            <option value="Choice 1">Choice 1</option>
+            <option value="Choice 1"><!-- html comment -->Choice 1</option>
             <option value="Choice 2">Choice 2</option>
             <option value="Find me">Choice 3</option>
             <option value="Choice 4">Choice 4</option>
@@ -69,7 +69,7 @@
           <script>
             document.addEventListener('DOMContentLoaded', function() {
               const choicesBasic = new Choices('#choices-basic', {
-                allowHTML: true,
+                allowHTML: false,
               });
               document
                 .querySelector('button.disable')
@@ -82,6 +82,20 @@
                 .addEventListener('click', () => {
                   choicesBasic.enable();
                 });
+            });
+          </script>
+        </div>
+
+        <div data-test-hook="single-item">
+          <label for="choices-basic">Single-item</label>
+          <select class="form-control" name="choices-single-item" id="choices-single-item">
+            <option value="Choice 1">Choice 1</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              new Choices('#choices-single-item', {
+                allowHTML: true,
+              });
             });
           </script>
         </div>
@@ -104,6 +118,52 @@
               new Choices('#choices-remove-button', {
                 allowHTML: true,
                 removeItemButton: true,
+              });
+            });
+          </script>
+        </div>
+
+        <div data-test-hook="remove-button-with-sorting-on">
+          <label for="choices-remove-button-with-sorting-on">Remove button with should sort On</label>
+          <select
+            class="form-control"
+            name="choices-remove-button-with-sorting-on"
+            id="choices-remove-button-with-sorting-on"
+          >
+            <option value="Choice 4" selected>Choice 4</option>
+            <option value="Choice 3">Choice 3</option>
+            <option value="Choice 2">Choice 2</option>
+            <option value="Choice 1">Choice 1</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              new Choices('#choices-remove-button-with-sorting-on', {
+                allowHTML: true,
+                removeItemButton: true,
+                shouldSort: true
+              });
+            });
+          </script>
+        </div>
+
+        <div data-test-hook="remove-button-with-sorting-off">
+          <label for="choices-remove-button-with-sorting-off">Remove button with should sort off</label>
+          <select
+            class="form-control"
+            name="choices-remove-button-with-sorting-off"
+            id="choices-remove-button-with-sorting-off"
+          >
+            <option value="Choice 4" selected>Choice 4</option>
+            <option value="Choice 3">Choice 3</option>
+            <option value="Choice 2">Choice 2</option>
+            <option value="Choice 1">Choice 1</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              new Choices('#choices-remove-button-with-sorting-off', {
+                allowHTML: true,
+                removeItemButton: true,
+                shouldSort: false
               });
             });
           </script>
@@ -132,6 +192,56 @@
           </script>
         </div>
 
+        <div data-test-hook="duplicate-items-allowed">
+          <label for="duplicate-items-allowed">Duplicate items allowed</label>
+          <select class="form-control" name="no-choices" id="duplicate-items-allowed">
+            <option value="call1">Service 1</option>
+            <option value="call2">Service 2</option>
+            <option value="call2">Service 3</option>
+            <option value="call1">Service 4</option>
+            <option value="call5">Service 5</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              new Choices('#duplicate-items-allowed', {
+                duplicateItemsAllowed: true,
+              });
+            });
+          </script>
+        </div>
+
+        <div data-test-hook="duplicate-items-disallowed">
+          <label for="duplicate-items-disallowed">Duplicate items disallowed</label>
+          <select class="form-control" name="no-choices" id="duplicate-items-disallowed">
+            <option value="call1">Service 1</option>
+            <option value="call2">Service 2</option>
+            <option value="call2">Service 3</option>
+            <option value="call1">Service 4</option>
+            <option value="call5">Service 5</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              new Choices('#duplicate-items-disallowed', {
+                duplicateItemsAllowed: false,
+              });
+            });
+          </script>
+        </div>
+
+        <div data-test-hook="renderSelectedChoices-true">
+          <label for="renderSelectedChoices-true">Render selected choices (single option)</label>
+          <select class="form-control" name="no-choices" id="renderSelectedChoices-true">
+            <option value="Choice 1" selected>Choice 1</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              new Choices('#renderSelectedChoices-true', {
+                renderSelectedChoices: true,
+              });
+            });
+          </script>
+        </div>
+
         <div data-test-hook="no-choices">
           <label for="no-choices">No choices</label>
           <select class="form-control" name="no-choices" id="no-choices">
@@ -140,6 +250,7 @@
             document.addEventListener('DOMContentLoaded', function() {
               new Choices('#no-choices', {
                 allowHTML: true,
+                renderSelectedChoices: false,
               });
             });
           </script>
@@ -154,6 +265,7 @@
             document.addEventListener('DOMContentLoaded', function() {
               new Choices('#no-choices2', {
                 allowHTML: true,
+                renderSelectedChoices: false,
               });
             });
           </script>
@@ -435,6 +547,33 @@
               }).setChoices(async () => {
                 try {
                   const data = await fetch('../data.json');
+                  return data.json();
+                } catch (e) {
+                  console.log(e);
+                  return [];
+                }
+              });
+            });
+          </script>
+        </div>
+
+        <div data-test-hook="remote-disabled-data">
+          <label for="choices-remote-disabled-data">Remote disabled data</label>
+          <select
+            class="form-control"
+            name="choices-remote-disabled-data"
+            id="choices-remote-disabled-data"
+          >
+            <option value="">I am a placeholder</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              new Choices('#choices-remote-disabled-data', {
+                allowHTML: true,
+                shouldSort: false,
+              }).setChoices(async () => {
+                try {
+                  const data = await fetch('../disabled-data.json');
                   return data.json();
                 } catch (e) {
                   console.log(e);
@@ -940,6 +1079,7 @@
           document.addEventListener('DOMContentLoaded', function() {
             const choices = new Choices('#choices-autocomplete', {
               shouldSort: false,
+              renderSelectedChoices: false,
             });
             choices.passedElement.element.addEventListener(
               'search',

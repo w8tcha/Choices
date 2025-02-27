@@ -60,6 +60,7 @@
           <label for="choices-basic">Basic</label>
           <button class="disable push-bottom">Disable</button>
           <button class="enable push-bottom">Enable</button>
+          <button class="setChoices push-bottom">Enable</button>
           <select
             class="form-control"
             name="choices-basic"
@@ -91,6 +92,18 @@
                 .querySelector('button.enable')
                 .addEventListener('click', () => {
                   choices.enable();
+                });
+
+              document
+                .querySelector('button.setChoices')
+                .addEventListener('click', () => {
+                  const options = [...new Array(20000)].map((_, index) => ({
+                    selected: !!(index % 2),
+                    label: `Choice ${index + 1}$`,
+                    value: `Choice ${index + 1}$`,
+                  }));
+
+                  choices.setChoices(options, null, null, true);
                 });
             });
           </script>

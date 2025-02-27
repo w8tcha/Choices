@@ -1,4 +1,4 @@
-/*! choices.js v11.0.3 | © 2024 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
+/*! choices.js v11.0.5 | © 2025 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
 
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -90,6 +90,8 @@
     };
 
     var KeyCodeMap = {
+        TAB_KEY: 9,
+        SHIFT_KEY: 16,
         BACK_KEY: 46,
         DELETE_KEY: 8,
         ENTER_KEY: 13,
@@ -757,11 +759,15 @@
         }
         return undefined;
     };
-    var mapInputToChoice = function (value, allowGroup) {
+    var mapInputToChoice = function (value, allowGroup, allowRawString) {
+        if (allowRawString === void 0) { allowRawString = true; }
         if (typeof value === 'string') {
+            var sanitisedValue = sanitise(value);
+            var userValue = allowRawString || sanitisedValue === value ? value : { escaped: sanitisedValue, raw: value };
             var result_1 = mapInputToChoice({
                 value: value,
-                label: value,
+                label: userValue,
+                selected: true,
             }, false);
             return result_1;
         }
@@ -866,7 +872,7 @@
                 score: 0,
                 rank: 0,
                 value: option.value,
-                label: option.innerHTML,
+                label: option.innerText, // HTML options do not support most html tags, but innerHtml will extract html comments...
                 element: option,
                 active: true,
                 // this returns true if nothing is selected on initial load, which will break placeholder support
@@ -1242,7 +1248,7 @@
              * Get highlighted items from store
              */
             get: function () {
-                return this.items.filter(function (item) { return !item.disabled && item.active && item.highlighted; });
+                return this.items.filter(function (item) { return item.active && item.highlighted; });
             },
             enumerable: false,
             configurable: true
@@ -1269,7 +1275,7 @@
         });
         Object.defineProperty(Store.prototype, "searchableChoices", {
             /**
-             * Get choices that can be searched (excluding placeholders)
+             * Get choices that can be searched (excluding placeholders or disabled choices)
              */
             get: function () {
                 return this.choices.filter(function (choice) { return !choice.disabled && !choice.placeholder; });
@@ -3143,11 +3149,15 @@
             if (this.dropdown.isActive) {
                 return this;
             }
+            if (preventInputFocus === undefined) {
+                // eslint-disable-next-line no-param-reassign
+                preventInputFocus = !this._canSearch;
+            }
             requestAnimationFrame(function () {
                 _this.dropdown.show();
                 var rect = _this.dropdown.element.getBoundingClientRect();
                 _this.containerOuter.open(rect.bottom, rect.height);
-                if (!preventInputFocus && _this._canSearch) {
+                if (!preventInputFocus) {
                     _this.input.focus();
                 }
                 _this.passedElement.triggerEvent(EventType.showDropdown);
@@ -3277,13 +3287,14 @@
          * }], 'value', 'label', false);
          * ```
          */
-        Choices.prototype.setChoices = function (choicesArrayOrFetcher, value, label, replaceChoices, clearSearchFlag) {
+        Choices.prototype.setChoices = function (choicesArrayOrFetcher, value, label, replaceChoices, clearSearchFlag, replaceItems) {
             var _this = this;
             if (choicesArrayOrFetcher === void 0) { choicesArrayOrFetcher = []; }
             if (value === void 0) { value = 'value'; }
             if (label === void 0) { label = 'label'; }
             if (replaceChoices === void 0) { replaceChoices = false; }
             if (clearSearchFlag === void 0) { clearSearchFlag = true; }
+            if (replaceItems === void 0) { replaceItems = false; }
             if (!this.initialisedOK) {
                 this._warnChoicesInitFailed('setChoices');
                 return this;
@@ -3294,10 +3305,6 @@
             if (typeof value !== 'string' || !value) {
                 throw new TypeError("value parameter must be a name of 'value' field in passed objects");
             }
-            // Clear choices if needed
-            if (replaceChoices) {
-                this.clearChoices();
-            }
             if (typeof choicesArrayOrFetcher === 'function') {
                 // it's a choices fetcher function
                 var fetcher_1 = choicesArrayOrFetcher(this);
@@ -3307,7 +3314,9 @@
                     return new Promise(function (resolve) { return requestAnimationFrame(resolve); })
                         .then(function () { return _this._handleLoadingState(true); })
                         .then(function () { return fetcher_1; })
-                        .then(function (data) { return _this.setChoices(data, value, label, replaceChoices); })
+                        .then(function (data) {
+                        return _this.setChoices(data, value, label, replaceChoices, clearSearchFlag, replaceItems);
+                    })
                         .catch(function (err) {
                         if (!_this.config.silent) {
                             console.error(err);
@@ -3331,6 +3340,16 @@
                 if (clearSearchFlag) {
                     _this._isSearching = false;
                 }
+                var items = {};
+                if (!replaceItems) {
+                    _this._store.items.forEach(function (item) {
+                        items[item.value] = item;
+                    });
+                }
+                // Clear choices if needed
+                if (replaceChoices) {
+                    _this.clearChoices();
+                }
                 var isDefaultValue = value === 'value';
                 var isDefaultLabel = label === 'label';
                 choicesArrayOrFetcher.forEach(function (groupOrChoice) {
@@ -3346,7 +3365,14 @@
                         if (!isDefaultLabel || !isDefaultValue) {
                             choice = __assign(__assign({}, choice), { value: choice[value], label: choice[label] });
                         }
-                        _this._addChoice(mapInputToChoice(choice, false));
+                        var choiceFull = mapInputToChoice(choice, false);
+                        if (!replaceItems && choiceFull.value in items) {
+                            choiceFull.selected = true;
+                        }
+                        _this._addChoice(choiceFull);
+                        if (choiceFull.placeholder && !_this._hasNonChoicePlaceholder) {
+                            _this._placeholderValue = unwrapStringForEscaped(choiceFull.label);
+                        }
                     }
                 });
                 _this.unhighlightAll();
@@ -3372,7 +3398,7 @@
                 var existingItems = {};
                 if (!deselectAll) {
                     _this._store.items.forEach(function (choice) {
-                        if (choice.id && choice.active && choice.selected && !choice.disabled) {
+                        if (choice.id && choice.active && choice.selected) {
                             existingItems[choice.value] = true;
                         }
                     });
@@ -3428,32 +3454,25 @@
             }
             return this;
         };
-        Choices.prototype.clearChoices = function () {
-            var _this = this;
-            this._store.withTxn(function () {
-                _this._store.choices.forEach(function (choice) {
-                    if (!choice.selected) {
-                        _this._store.dispatch(removeChoice(choice));
-                    }
-                });
-            });
+        Choices.prototype.clearChoices = function (clearOptions) {
+            if (clearOptions === void 0) { clearOptions = true; }
+            if (clearOptions) {
+                this.passedElement.element.replaceChildren('');
+            }
+            this.itemList.element.replaceChildren('');
+            this.choiceList.element.replaceChildren('');
+            this._clearNotice();
+            this._store.reset();
             // @todo integrate with Store
             this._searcher.reset();
             return this;
         };
         Choices.prototype.clearStore = function (clearOptions) {
             if (clearOptions === void 0) { clearOptions = true; }
+            this.clearChoices(clearOptions);
             this._stopSearch();
-            if (clearOptions) {
-                this.passedElement.element.replaceChildren('');
-            }
-            this.itemList.element.replaceChildren('');
-            this.choiceList.element.replaceChildren('');
-            this._store.reset();
             this._lastAddedChoiceId = 0;
             this._lastAddedGroupId = 0;
-            // @todo integrate with Store
-            this._searcher.reset();
             return this;
         };
         Choices.prototype.clearInput = function () {
@@ -3535,7 +3554,7 @@
                     var dropdownItem = choice.choiceEl || _this._templates.choice(config, choice, config.itemSelectText, groupLabel);
                     choice.choiceEl = dropdownItem;
                     fragment.appendChild(dropdownItem);
-                    if (!choice.disabled && (isSearching || !choice.selected)) {
+                    if (isSearching || !choice.selected) {
                         selectableChoices = true;
                     }
                     return index < choiceLimit;
@@ -3574,7 +3593,7 @@
                     renderChoices(renderableChoices(activeChoices), false, undefined);
                 }
             }
-            if (!selectableChoices) {
+            if (!selectableChoices && (isSearching || !fragment.children.length || !config.renderSelectedChoices)) {
                 if (!this._notice) {
                     this._notice = {
                         text: resolveStringFunction(isSearching ? config.noResultsText : config.noChoicesText),
@@ -3609,26 +3628,26 @@
             };
             // new items
             items.forEach(addItemToFragment);
-            var addItems = !!fragment.childNodes.length;
-            if (this._isSelectOneElement && this._hasNonChoicePlaceholder) {
+            var addedItems = !!fragment.childNodes.length;
+            if (this._isSelectOneElement) {
                 var existingItems = itemList.children.length;
-                if (addItems || existingItems > 1) {
+                if (addedItems || existingItems > 1) {
                     var placeholder = itemList.querySelector(getClassNamesSelector(config.classNames.placeholder));
                     if (placeholder) {
                         placeholder.remove();
                     }
                 }
-                else if (!existingItems) {
-                    addItems = true;
+                else if (!addedItems && !existingItems && this._placeholderValue) {
+                    addedItems = true;
                     addItemToFragment(mapInputToChoice({
                         selected: true,
                         value: '',
-                        label: config.placeholderValue || '',
+                        label: this._placeholderValue,
                         placeholder: true,
                     }, false));
                 }
             }
-            if (addItems) {
+            if (addedItems) {
                 itemList.append(fragment);
                 if (config.shouldSortItems && !this._isSelectOneElement) {
                     items.sort(config.sorter);
@@ -3739,9 +3758,7 @@
                 _this._removeItem(itemToRemove);
                 _this._triggerChange(itemToRemove.value);
                 if (_this._isSelectOneElement && !_this._hasNonChoicePlaceholder) {
-                    var placeholderChoice = _this._store.choices
-                        .reverse()
-                        .find(function (choice) { return !choice.disabled && choice.placeholder; });
+                    var placeholderChoice = (_this.config.shouldSort ? _this._store.choices.reverse() : _this._store.choices).find(function (choice) { return choice.placeholder; });
                     if (placeholderChoice) {
                         _this._addItem(placeholderChoice);
                         _this.unhighlightAll();
@@ -3830,6 +3847,7 @@
         };
         Choices.prototype._loadChoices = function () {
             var _a;
+            var _this = this;
             var config = this.config;
             if (this._isTextElement) {
                 // Assign preset items from passed object first
@@ -3838,7 +3856,7 @@
                 if (this.passedElement.value) {
                     var elementItems = this.passedElement.value
                         .split(config.delimiter)
-                        .map(function (e) { return mapInputToChoice(e, false); });
+                        .map(function (e) { return mapInputToChoice(e, false, _this.config.allowHtmlUserInput); });
                     this._presetChoices = this._presetChoices.concat(elementItems);
                 }
                 this._presetChoices.forEach(function (choice) {
@@ -3904,8 +3922,12 @@
             var maxItemCount = config.maxItemCount, maxItemText = config.maxItemText;
             if (!config.singleModeForMultiSelect && maxItemCount > 0 && maxItemCount <= this._store.items.length) {
                 this.choiceList.element.replaceChildren('');
+                this._notice = undefined;
                 this._displayNotice(typeof maxItemText === 'function' ? maxItemText(maxItemCount) : maxItemText, NoticeTypes.addChoice);
                 return false;
+            }
+            if (this._notice && this._notice.type === NoticeTypes.addChoice) {
+                this._clearNotice();
             }
             return true;
         };
@@ -3919,15 +3941,13 @@
             }
             if (canAddItem) {
                 var foundChoice = this._store.choices.find(function (choice) { return config.valueComparer(choice.value, value); });
-                if (this._isSelectElement) {
-                    // for exact matches, do not prompt to add it as a custom choice
-                    if (foundChoice) {
+                if (foundChoice) {
+                    if (this._isSelectElement) {
+                        // for exact matches, do not prompt to add it as a custom choice
                         this._displayNotice('', NoticeTypes.addChoice);
                         return false;
                     }
-                }
-                else if (this._isTextElement && !config.duplicateItemsAllowed) {
-                    if (foundChoice) {
+                    if (!config.duplicateItemsAllowed) {
                         canAddItem = false;
                         notice = resolveNoticeFunction(config.uniqueItemText, value);
                     }
@@ -4081,7 +4101,15 @@
             var wasPrintableChar = event.key.length === 1 ||
                 (event.key.length === 2 && event.key.charCodeAt(0) >= 0xd800) ||
                 event.key === 'Unidentified';
-            if (!this._isTextElement && !hasActiveDropdown) {
+            /*
+              We do not show the dropdown if focusing out with esc or navigating through input fields.
+              An activated search can still be opened with any other key.
+             */
+            if (!this._isTextElement &&
+                !hasActiveDropdown &&
+                keyCode !== KeyCodeMap.ESC_KEY &&
+                keyCode !== KeyCodeMap.TAB_KEY &&
+                keyCode !== KeyCodeMap.SHIFT_KEY) {
                 this.showDropdown();
                 if (!this.input.isFocussed && wasPrintableChar) {
                     /*
@@ -4190,13 +4218,7 @@
                     if (!_this._canCreateItem(value)) {
                         return;
                     }
-                    var sanitisedValue = sanitise(value);
-                    var userValue = _this.config.allowHtmlUserInput || sanitisedValue === value ? value : { escaped: sanitisedValue, raw: value };
-                    _this._addChoice(mapInputToChoice({
-                        value: userValue,
-                        label: userValue,
-                        selected: true,
-                    }, false), true, true);
+                    _this._addChoice(mapInputToChoice(value, false, _this.config.allowHtmlUserInput), true, true);
                     addedItem = true;
                 }
                 _this.clearInput();
@@ -4214,6 +4236,7 @@
             if (hasActiveDropdown) {
                 event.stopPropagation();
                 this.hideDropdown(true);
+                this._stopSearch();
                 this.containerOuter.element.focus();
             }
         };
@@ -4389,17 +4412,18 @@
             var containerOuter = this.containerOuter;
             var blurWasWithinContainer = target && containerOuter.element.contains(target);
             if (blurWasWithinContainer && !this._isScrollingOnIe) {
-                var targetIsInput = target === this.input.element;
-                if (this._isTextElement || this._isSelectMultipleElement) {
-                    if (targetIsInput) {
-                        containerOuter.removeFocusState();
-                        this.hideDropdown(true);
+                if (target === this.input.element) {
+                    containerOuter.removeFocusState();
+                    this.hideDropdown(true);
+                    if (this._isTextElement || this._isSelectMultipleElement) {
                         this.unhighlightAll();
                     }
                 }
-                else {
+                else if (target === this.containerOuter.element) {
+                    // Remove the focus state when the past outerContainer was the target
                     containerOuter.removeFocusState();
-                    if (targetIsInput || (target === containerOuter.element && !this._canSearch)) {
+                    // Also close the dropdown if search is disabled
+                    if (!this._canSearch) {
                         this.hideDropdown(true);
                     }
                 }
@@ -4488,6 +4512,10 @@
                 return;
             }
             this._store.dispatch(removeItem$1(item));
+            var notice = this._notice;
+            if (notice && notice.type === NoticeTypes.noChoices) {
+                this._clearNotice();
+            }
             this.passedElement.triggerEvent(EventType.removeItem, this._getChoiceForOutput(item));
         };
         Choices.prototype._addChoice = function (choice, withEvents, userTriggered) {
@@ -4497,8 +4525,7 @@
                 throw new TypeError('Can not re-add a choice which has already been added');
             }
             var config = this.config;
-            if ((this._isSelectElement || !config.duplicateItemsAllowed) &&
-                this._store.choices.find(function (c) { return config.valueComparer(c.value, choice.value); })) {
+            if (!config.duplicateItemsAllowed && this._store.choices.find(function (c) { return config.valueComparer(c.value, choice.value); })) {
                 return;
             }
             // Generate unique id, in-place update is required so chaining _addItem works as expected
@@ -4704,7 +4731,7 @@
                 throw new TypeError("".concat(caller, " called for an element which has multiple instances of Choices initialised on it"));
             }
         };
-        Choices.version = '11.0.3';
+        Choices.version = '11.0.5';
         return Choices;
     }());
 
