@@ -17,3 +17,4 @@ coverage
 /blob-report/
 /playwright/.cache/
 package-lock.json
+/.vs
