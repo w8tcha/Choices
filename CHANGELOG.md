@@ -2,11 +2,17 @@
 
 ## [11.0.6]
 
+### Breaking changes
+- Changes to `setChoices` & `clearChoices` adjust how the selection and new choices combine when using `replaceChoices: true` is used to better match v10 and v11.0.3 behavior.
+  - To remove duplication, consider `duplicateItemsAllowed: false` to be set, or use the new 6th argument `replaceItems:true`
+
 ### Bug Fixes
+- Fix `setChoices` & `clearChoices` related regressions @Xon ([#1278](https://github.com/Choices-js/Choices/issues/1278]) [#1283](https://github.com/Choices-js/Choices/issues/1283)
 - Revert "Do not preventDefault on item to support dragging" [#1266](https://github.com/Choices-js/Choices/issues/1266) @Xon ([#1282](https://github.com/Choices-js/Choices/issues/1282))
 
 ### Chore
 - Add e2e test for dropdown behavior on item mouse down/click
+- Add e2e test for serveral `setChoices`/`clearChoices` actions
 
 ## [11.0.5] (2025-02-26)
 

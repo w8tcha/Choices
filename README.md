@@ -1168,11 +1168,13 @@ example.setChoices(
 );
 ```
 
-### clearChoices();
+### clearChoices(clearOptions: boolean = true, clearItems: boolean = false);
 
 **Input types affected:** `select-one`, `select-multiple`
 
 **Usage:** Clear all choices from select including any selected items. Does **not** reset the search state.
+- `clearOptions` If true, clears the backing options from the `<select>` element
+- `clearItems` If false, preserves selected items instead of clearing them
 
 ### getValue(valueOnly?: boolean): string[] | EventChoice[] | EventChoice | string;
 

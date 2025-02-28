@@ -1107,6 +1107,83 @@
           </script>
         </div>
 
+        <div data-test-hook="clear-on-add">
+          <label for="choices-clear-on-add">Clear choices on add item</label>
+          <select
+            class="form-control"
+            name="choices-clear-on-add"
+            id="choices-clear-on-add"
+            multiple
+          >
+            <option value="Choice 1">Choice 1</option>
+            <option value="Choice 2">Choice 2</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              const choices = new Choices('#choices-clear-on-add', {});
+              choices.passedElement.element.addEventListener("addItem", function () {
+                choices.clearChoices()
+                choices.hideDropdown()
+              })
+            });
+          </script>
+        </div>
+
+        <div data-test-hook="set-choices-preserve">
+          <label for="choices-set-choices-preserve">setChoices example</label>
+          <select
+            class="form-control"
+            name="choices-set-choices-preserve"
+            id="choices-set-choices-preserve"
+            multiple
+          >
+            <option value="Choice 1">Choice 1</option>
+            <option value="Choice 2" selected>Choice 2</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              const choices = new Choices('#choices-set-choices-preserve', {});
+              choices.setChoices(
+                [
+                  { value: 'Choice 1', label: 'Choice 1' },
+                  { value: 'Choice 2', label: 'Choice 2' }
+                ],
+                'value',
+                'label',
+                true,
+              );
+            });
+          </script>
+        </div>
+
+        <div data-test-hook="set-choices-preserve-no-dupes">
+          <label for="choices-set-choices-preserve">setChoices example (no duplicates)</label>
+          <select
+            class="form-control"
+            name="choices-set-choices-preserve-no-dupes"
+            id="choices-set-choices-preserve-no-dupes"
+            multiple
+          >
+            <option value="Choice 1">Choice 1</option>
+            <option value="Choice 2" selected>Choice 2</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              const choices = new Choices('#choices-set-choices-preserve-no-dupes', {
+                duplicateItemsAllowed: false,
+              });
+              choices.setChoices(
+                [
+                  { value: 'Choice 1', label: 'Choice 1' },
+                  { value: 'Choice 2', label: 'Choice 2' }
+                ],
+                'value',
+                'label',
+                true,
+              );
+            });
+          </script>
+        </div>
 
       </div>
     </div>

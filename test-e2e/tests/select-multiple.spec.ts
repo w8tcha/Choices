@@ -1034,5 +1034,50 @@ describe(`Choices - select multiple`, () => {
         await suite.expectVisibleNoticeHtml('No choices to choose from');
       });
     });
+
+    describe('Clear choices on add item', () => {
+      const testId = 'clear-on-add';
+      test('Expected items', async ({ page, bundle }) => {
+        const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+        await suite.startWithClick();
+        await suite.expectChoiceCount(2);
+
+        await suite.choices.first().click();
+        await suite.advanceClock();
+        await suite.expectHiddenDropdown();
+        await suite.expectedItemCount(1);
+
+        await suite.wrapper.click();
+        await suite.advanceClock();
+        await suite.expectVisibleNoticeHtml('No choices to choose from', false);
+
+        await suite.keyPress('Backspace');
+        await suite.expectedItemCount(0);
+        await suite.expectChoiceCount(1);
+      });
+    });
+
+    describe('setChoices', () => {
+      test('Expected selected to be preserved', async ({ page, bundle }) => {
+        const suite = new SelectTestSuit(page, bundle, testUrl, 'set-choices-preserve');
+        await suite.start();
+        await suite.advanceClock();
+
+        await suite.expectHiddenDropdown();
+        await suite.expectedValue('Choice 2');
+        await suite.expectedItemCount(1);
+        await suite.expectChoiceCount(2);
+      });
+
+      test('Expected selected to be preserved (no duplicates)', async ({ page, bundle }) => {
+        const suite = new SelectTestSuit(page, bundle, testUrl, 'set-choices-preserve-no-dupes');
+        await suite.start();
+
+        await suite.expectHiddenDropdown();
+        await suite.expectedValue('Choice 2');
+        await suite.expectedItemCount(1);
+        await suite.expectChoiceCount(1);
+      });
+    });
   });
 });
