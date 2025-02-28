@@ -60,7 +60,7 @@ export const mapInputToChoice = <T extends string | InputChoice | InputGroup>(
       label: unwrapStringForRaw(group.label) || group.value,
       active: !!choices.length,
       disabled: !!group.disabled,
-      choices,
+      choices
     };
 
     return result as MappedInputTypeToChoiceType<T>;
@@ -82,7 +82,7 @@ export const mapInputToChoice = <T extends string | InputChoice | InputGroup>(
     highlighted: false,
     labelClass: stringToHtmlClass(choice.labelClass),
     labelDescription: choice.labelDescription,
-    customProperties: choice.customProperties,
+    customProperties: choice.customProperties
   };
 
   return result as MappedInputTypeToChoiceType<T>;

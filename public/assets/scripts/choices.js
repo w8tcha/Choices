@@ -779,14 +779,13 @@
             }
             var group = groupOrChoice;
             var choices = group.choices.map(function (e) { return mapInputToChoice(e, false); });
-
             var result_2 = {
                 id: 0, // actual ID will be assigned during _addGroup
                 value: group.value,
                 label: unwrapStringForRaw(group.label) || group.value,
                 active: !!choices.length,
                 disabled: !!group.disabled,
-                choices: choices,
+                choices: choices
             };
             return result_2;
         }
@@ -805,7 +804,7 @@
             highlighted: false,
             labelClass: stringToHtmlClass(choice.labelClass),
             labelDescription: choice.labelDescription,
-            customProperties: choice.customProperties,
+            customProperties: choice.customProperties
         };
         return result;
     };
@@ -894,7 +893,7 @@
             return {
                 id: 0,
                 label: optgroup.label || '',
-                value: optgroup.value,
+                value: optgroup.getAttribute('value') || '',
                 element: optgroup,
                 active: !!choices.length,
                 disabled: optgroup.disabled,

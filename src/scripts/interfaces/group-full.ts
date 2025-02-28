@@ -6,6 +6,7 @@ export interface GroupFull {
   active: boolean;
   disabled: boolean;
   label?: string;
+  value?: string;
   element?: HTMLOptGroupElement;
   groupEl?: HTMLElement;
   choices: ChoiceFull[];
