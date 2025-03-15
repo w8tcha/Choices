@@ -1,13 +1,22 @@
 # Changelog
 
-## [11.0.6]
+## [11.1.0]
+
+### Features
+- Support `<option>` label attribute [#1289](https://github.com/Choices-js/Choices/pull/1289)
+- Add KMP search algorithm (gated by build flag) [#1229](https://github.com/Choices-js/Choices/issue/1229) [#1277](https://github.com/Choices-js/Choices/pull/1277)
+
+### Bug Fixes
+- Remove `role="textbox"` from search input, per a11y practices. [#941](https://github.com/Choices-js/Choices/issues/941) @mlinnetz ([#1285](https://github.com/Choices-js/Choices/issues/1285))
+
+## [11.0.6] (2025-02-27)
 
 ### Breaking changes
 - Changes to `setChoices` & `clearChoices` adjust how the selection and new choices combine when using `replaceChoices: true` is used to better match v10 and v11.0.3 behavior.
   - To remove duplication, consider `duplicateItemsAllowed: false` to be set, or use the new 6th argument `replaceItems:true`
 
 ### Bug Fixes
-- Fix `setChoices` & `clearChoices` related regressions @Xon ([#1278](https://github.com/Choices-js/Choices/issues/1278]) [#1283](https://github.com/Choices-js/Choices/issues/1283)
+- Fix `setChoices` & `clearChoices` related regressions @Xon ([#1278](https://github.com/Choices-js/Choices/issues/1278])) [#1283](https://github.com/Choices-js/Choices/issues/1283)
 - Revert "Do not preventDefault on item to support dragging" [#1266](https://github.com/Choices-js/Choices/issues/1266) @Xon ([#1282](https://github.com/Choices-js/Choices/issues/1282))
 
 ### Chore
@@ -222,7 +231,7 @@
 * Allow user-created choices for selects. [#1117](https://github.com/Choices-js/Choices/issues/1117) [#1114](https://github.com/Choices-js/Choices/issues/1114)
     * User input is escaped by default. At the risk of XSS attacks this can be disabled by `allowHtmlUserInput`.
 * Render options without a group even if groups are present. [#615](https://github.com/Choices-js/Choices/issues/615) [#1110](https://github.com/Choices-js/Choices/issues/1110)
-* Read `data-labelclass`/`data-label-description` from `<option>` HTML to drive adding a per-choice CSS label and description text when `allowHtml: false`.
+* Read `data-label-class`/`data-label-description` from `<option>` HTML to drive adding a per-choice CSS label and description text when `allowHtml: false`.
 * Add `removeItemButtonAlignLeft` option, to control if the remove item button is at the start or the end of the item.
 * Add `removeChoice` method. Removes the choice from the `choices.js` object and any backing `<option>` HTML element
 * Add `refresh` method. Reloads choices from the backing `<select>`s options.

@@ -337,7 +337,6 @@ const templates: TemplatesInterface = {
     inp.autocapitalize = 'off';
     inp.spellcheck = false;
 
-    inp.setAttribute('role', 'textbox');
     inp.setAttribute('aria-autocomplete', 'list');
     if (placeholderValue) {
       inp.setAttribute('aria-label', placeholderValue);

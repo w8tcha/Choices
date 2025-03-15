@@ -11,6 +11,7 @@ const pckg = require('../package.json');
 
 const buildFeatures = {
   CHOICES_SEARCH_FUSE: "full", // "basic" / "null"
+  CHOICES_SEARCH_KMP: "0", // "1"
   CHOICES_CAN_USE_DOM: "1", // "0"
 }
 
@@ -38,6 +39,13 @@ const builds = [
     features: {
       ...buildFeatures,
       CHOICES_SEARCH_FUSE: "null"
+    }
+  },
+  {
+    name: "search-kmp",
+    features: {
+      ...buildFeatures,
+      CHOICES_SEARCH_KMP: "1"
     }
   },
 ];

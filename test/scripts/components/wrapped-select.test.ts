@@ -20,7 +20,11 @@ describe('components/wrappedSelect', () => {
         option.innerHTML = 'Placeholder label';
       } else {
         option.value = `Value ${i}`;
-        option.innerHTML = `Label ${i}`;
+        if (i % 2 === 0) {
+          option.innerHTML = `Label ${i}`;
+        } else {
+          option.label = `Label ${i}`;
+        }
       }
 
       if (i === 1) {
