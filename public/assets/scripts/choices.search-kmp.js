@@ -20,7 +20,7 @@
     OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
     PERFORMANCE OF THIS SOFTWARE.
     ***************************************************************************** */
-    /* global Reflect, Promise, SuppressedError, Symbol */
+    /* global Reflect, Promise, SuppressedError, Symbol, Iterator */
 
     var extendStatics = function (d, b) {
       extendStatics = Object.setPrototypeOf || {
@@ -772,10 +772,11 @@
             var choices = group.choices.map(function (e) { return mapInputToChoice(e, false); });
             var result_2 = {
                 id: 0, // actual ID will be assigned during _addGroup
+                value: group.value,
                 label: unwrapStringForRaw(group.label) || group.value,
                 active: !!choices.length,
                 disabled: !!group.disabled,
-                choices: choices,
+                choices: choices
             };
             return result_2;
         }
@@ -794,7 +795,7 @@
             highlighted: false,
             labelClass: stringToHtmlClass(choice.labelClass),
             labelDescription: choice.labelDescription,
-            customProperties: choice.customProperties,
+            customProperties: choice.customProperties
         };
         return result;
     };
@@ -885,6 +886,7 @@
             return {
                 id: 0,
                 label: optgroup.label || '',
+                value: optgroup.getAttribute('value') || '',
                 element: optgroup,
                 active: !!choices.length,
                 disabled: optgroup.disabled,
@@ -898,7 +900,7 @@
         containerOuter: ['choices'],
         containerInner: ['choices__inner'],
         input: ['choices__input'],
-        inputCloned: ['choices__input--cloned'],
+        inputCloned: ['choices__input--cloned', 'form-control'],
         list: ['choices__list'],
         listItems: ['choices__list--multiple'],
         listSingle: ['choices__list--single'],
@@ -911,7 +913,7 @@
         placeholder: ['choices__placeholder'],
         group: ['choices__group'],
         groupHeading: ['choices__heading'],
-        button: ['choices__button'],
+        button: ['choices__button btn-close'],
         activeState: ['is-active'],
         focusState: ['is-focused'],
         openState: ['is-open'],
@@ -1927,6 +1929,7 @@
             if (this.containerOuter.isDisabled) {
                 this._addEventListeners();
                 this.input.enable();
+                this.input.element.focus();
                 this.containerOuter.enable();
             }
             return this;
@@ -2234,7 +2237,7 @@
                     if ('choices' in groupOrChoice) {
                         var group = groupOrChoice;
                         if (!isDefaultLabel) {
-                            group = __assign(__assign({}, group), { label: group[label] });
+                            group = __assign(__assign({}, group), { label: group[label], value: group[value] });
                         }
                         _this._addGroup(mapInputToChoice(group, true));
                     }
