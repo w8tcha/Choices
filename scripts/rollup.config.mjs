@@ -131,9 +131,9 @@ function genConfig(buildConfig) {
         // https://github.com/rollup/plugins/issues/1495
         // @rollup/plugin-typescript just doesn't want to reliably generate .d.ts files when "composite" is true, so just copy the tsconfig.json definition around
         // Additionally tsc no longer accepts relative directories which escape declarationDir
-        "declaration": withDeclarations,
+        //"declaration": withDeclarations,
         // declarationDir in src/tsconfig.json with a value of "./" magically maps to "./src" here...
-        "declarationDir": withDeclarations ? "./src" : undefined,
+        //"declarationDir": withDeclarations ? "./src" : undefined,
         "declarationMap": false,
       }),
       replace(vars)
