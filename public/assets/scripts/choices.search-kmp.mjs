@@ -770,7 +770,7 @@ var mapInputToChoice = function (value, allowGroup, allowRawString) {
             label: unwrapStringForRaw(group.label) || group.value,
             active: !!choices.length,
             disabled: !!group.disabled,
-            choices: choices
+            choices: choices,
         };
         return result_2;
     }
@@ -789,7 +789,7 @@ var mapInputToChoice = function (value, allowGroup, allowRawString) {
         highlighted: false,
         labelClass: stringToHtmlClass(choice.labelClass),
         labelDescription: choice.labelDescription,
-        customProperties: choice.customProperties
+        customProperties: choice.customProperties,
     };
     return result;
 };
@@ -1646,6 +1646,7 @@ var templates = {
         inp.autocomplete = 'off';
         inp.autocapitalize = 'off';
         inp.spellcheck = false;
+        inp.name = 'search';
         inp.setAttribute('aria-autocomplete', 'list');
         if (placeholderValue) {
             inp.setAttribute('aria-label', placeholderValue);

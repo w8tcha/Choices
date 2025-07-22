@@ -336,6 +336,7 @@ const templates: TemplatesInterface = {
     inp.autocomplete = 'off';
     inp.autocapitalize = 'off';
     inp.spellcheck = false;
+    inp.name = 'search';
 
     inp.setAttribute('aria-autocomplete', 'list');
     if (placeholderValue) {
