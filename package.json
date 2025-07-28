@@ -114,7 +114,7 @@
     "chai": "^5.2.1",
     "cross-process-lock": "^2.1.1",
     "csso-cli": "^4.0.2",
-    "eslint": "^8.57.0",
+    "eslint": "^9.32.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-config-prettier": "^10.1.8",
