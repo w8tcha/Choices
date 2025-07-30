@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -30,4 +30,4 @@ jobs:
         npm run build
     - name: Test
       run: |
-       npm run test
+       npm run test:unit
