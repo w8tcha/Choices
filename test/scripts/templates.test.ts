@@ -588,6 +588,7 @@ describe('templates', () => {
           type="search"
           class="${getClassNames(inputOptions.classNames.input).join(' ')} ${getClassNames(inputOptions.classNames.inputCloned).join(' ')}"
           autocomplete="off"
+          name="search"
           aria-autocomplete="list"
           aria-label="test placeholder"
         >
