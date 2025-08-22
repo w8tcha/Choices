@@ -108,7 +108,7 @@
     "@types/sinon-chai": "^4.0.0",
     "@vitest/coverage-v8": "^3.1.1",
     "autoprefixer": "^10.4.21",
-    "chai": "^5.2.1",
+    "chai": "^6.0.0",
     "cross-process-lock": "^2.1.1",
     "csso-cli": "^4.0.2",
     "eslint": "^8.57.0",
