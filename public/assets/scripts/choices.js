@@ -922,7 +922,7 @@
         placeholder: ['choices__placeholder'],
         group: ['choices__group'],
         groupHeading: ['choices__heading'],
-        button: ['choices__button btn-close'],
+        button: ['choices__button', 'btn-close'],
         activeState: ['is-active'],
         focusState: ['is-focused'],
         openState: ['is-open'],

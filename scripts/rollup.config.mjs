@@ -4,7 +4,7 @@ import babel from '@rollup/plugin-babel';
 import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
 import * as fs from 'node:fs';
-import server from './scripts/server.mjs';
+import server from './server.mjs';
 
 // @ts-ignore
 const pckg = require('../package.json');
