@@ -16,6 +16,7 @@ import {
   escapeForTemplate,
   addClassesToElement,
   removeClassesFromElement,
+  getChoiceForOutput,
 } from './lib/utils';
 import { NoticeType, NoticeTypes, TemplateOptions, Templates as TemplatesInterface } from './interfaces/templates';
 import { StringUntrusted } from './interfaces/string-untrusted';
@@ -40,7 +41,7 @@ const assignCustomProperties = (el: HTMLElement, choice: ChoiceFull, withCustomP
   }
 
   if (labelDescription) {
-    dataset.labelDescription = labelDescription;
+    dataset.labelDescription = unwrapStringForRaw(labelDescription);
   }
 
   if (withCustomProperties && customProperties) {
@@ -189,9 +190,10 @@ const templates: TemplatesInterface = {
       const removeButton = document.createElement('button');
       removeButton.type = 'button';
       addClassesToElement(removeButton, button);
-      setElementHtml(removeButton, true, resolveNoticeFunction(removeItemIconText, choice.value));
+      const eventChoice = getChoiceForOutput(choice);
+      setElementHtml(removeButton, true, resolveNoticeFunction(removeItemIconText, choice.value, eventChoice));
 
-      const REMOVE_ITEM_LABEL = resolveNoticeFunction(removeItemLabelText, choice.value);
+      const REMOVE_ITEM_LABEL = resolveNoticeFunction(removeItemLabelText, choice.value, eventChoice);
       if (REMOVE_ITEM_LABEL) {
         removeButton.setAttribute('aria-label', REMOVE_ITEM_LABEL);
       }
@@ -320,6 +322,7 @@ const templates: TemplatesInterface = {
     } else {
       addClassesToElement(div, itemSelectable);
       div.dataset.choiceSelectable = '';
+      div.setAttribute('aria-selected', choice.selected ? 'true' : 'false');
     }
 
     return div;

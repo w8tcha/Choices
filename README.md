@@ -45,6 +45,7 @@ A vanilla, lightweight (~20kb gzipped 🎉), configurable select box/text input 
 - [Callbacks](#callbacks)
 - [Events](#events)
 - [Methods](#methods)
+- [CSS custom properties](#css-custom-properties)
 - [Development](#development)
 - [License](#license)
 
@@ -64,8 +65,9 @@ yarn add choices.js
 
 From a [CDN](https://www.jsdelivr.com/package/npm/choices.js):
 
-**Note:** There is sometimes a delay before the latest version of Choices is reflected on the CDN.
-
+**Notes:**
+* There is sometimes a delay before the latest version of Choices is reflected on the CDN.
+* Examples below pin a version (v11.1.0). Check [latest release](https://www.jsdelivr.com/package/npm/choices.js) and update v11.1.0 to the latest tag before using.
 ```html
 <!-- Include base CSS (optional) -->
 <link
@@ -75,7 +77,7 @@ From a [CDN](https://www.jsdelivr.com/package/npm/choices.js):
 <!-- Or versioned -->
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/base.min.css"
+  href="https://cdn.jsdelivr.net/npm/choices.js@11.1.0/public/assets/styles/base.min.css"
 />
 
 <!-- Include Choices CSS -->
@@ -86,13 +88,13 @@ From a [CDN](https://www.jsdelivr.com/package/npm/choices.js):
 <!-- Or versioned -->
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css"
+  href="https://cdn.jsdelivr.net/npm/choices.js@11.1.0/public/assets/styles/choices.min.css"
 />
 
 <!-- Include Choices JavaScript (latest) -->
 <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 <!-- Or versioned -->
-<script src="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/scripts/choices.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/choices.js@11.1.0/public/assets/scripts/choices.min.js"></script>
 ```
 
 Or include Choices directly:
@@ -159,6 +161,7 @@ import "choices.js/public/assets/styles/choices.css";
     paste: true,
     searchEnabled: true,
     searchChoices: true,
+    searchDisabledChoices: false,
     searchFloor: 1,
     searchResultLimit: 4,
     searchFields: ['label', 'value'],
@@ -174,17 +177,18 @@ import "choices.js/public/assets/styles/choices.css";
     prependValue: null,
     appendValue: null,
     renderSelectedChoices: 'auto',
+    searchRenderSelectedChoices: true,
     loadingText: 'Loading...',
     noResultsText: 'No results found',
     noChoicesText: 'No choices to choose from',
     itemSelectText: 'Press to select',
     uniqueItemText: 'Only unique values can be added',
     customAddItemText: 'Only values matching specific conditions can be added',
-    addItemText: (value) => {
+    addItemText: (value, rawValue) => {
       return `Press Enter to add <b>"${value}"</b>`;
     },
     removeItemIconText: () => `Remove item`,
-    removeItemLabelText: (value) => `Remove item: ${value}`,
+    removeItemLabelText: (value, rawValue) => `Remove item: ${value}`,
     maxItemText: (maxItemCount) => {
       return `Only ${maxItemCount} values can be added`;
     },
@@ -217,6 +221,7 @@ import "choices.js/public/assets/styles/choices.css";
       selectedState: ['is-selected'],
       flippedState: ['is-flipped'],
       loadingState: ['is-loading'],
+      invalidState: ['is-invalid'],
       notice: ['choices__notice'],
       addChoice: ['choices__item--selectable', 'add-choice'],
       noResults: ['has-no-results'],
@@ -480,6 +485,14 @@ Pass an array of objects:
 
 **Usage:** Whether choices should be filtered by input or not. If `false`, the search event will still emit, but choices will not be filtered.
 
+### searchDisabledChoices
+
+**Type:** `Boolean` **Default:** `false`
+
+**Input types affected:** `select-one`, `select-multiple`
+
+**Usage:** Whether disabled choices should be included in search results. If `true`, disabled choices will appear in search results but still cannot be selected. This is useful when you want users to see what options exist but are currently unavailable. Placeholders are always excluded from search results regardless of this setting.
+
 ### searchFields
 
 **Type:** `Array/String` **Default:** `['label', 'value']`
@@ -659,6 +672,23 @@ For backward compatibility, `<option value="">This is a placeholder</option>` an
 
 **Usage:** Whether selected choices should be removed from the list. By default choices are removed when they are selected in multiple select box. To always render choices pass `always`.
 
+### searchRenderSelectedChoices
+
+**Type:** `Boolean` **Default:** `true'`
+
+**Input types affected:** `select-multiple`
+
+**Usage:** Whether selected choices should be removed from the list during search.
+
+**Example:**
+
+```js
+// Hide selected choices from search results
+const example = new Choices(element, {
+  searchRenderSelectedChoices: false,
+});
+```
+
 ### loadingText
 
 **Type:** `String` **Default:** `Loading...`
@@ -693,7 +723,7 @@ For backward compatibility, `<option value="">This is a placeholder</option>` an
 
 ### addItemText
 
-**Type:** `String/Function` **Default:** `Press Enter to add "${value}"`
+**Type:** `String/Function` **Default:** `Press Enter to add "${value}"` **Arguments:** `value`, `valueRaw`
 
 **Input types affected:** `text`, `select-one`, `select-multiple`
 
@@ -703,27 +733,29 @@ Return type must be safe to insert into HTML (ie use the 1st argument which is s
 
 ### removeItemIconText
 
-**Type:** `String/Function` **Default:** `Remove item"`
+**Type:** `String/Function` **Default:** `Remove item"` **Arguments:** `value`, `valueRaw`, `item`
 
 **Input types affected:** `text`, `select-one`, `select-multiple`
 
 **Usage:** The text/icon for the remove button. To access the item's value, pass a function with a `value` argument (see the **default config** [https://github.com/jshjohnson/Choices#setup] for an example), otherwise pass a string.
+To access the item's label, use the 3rd argument. *Note*; this label is not escaped.
 
 Return type must be safe to insert into HTML (ie use the 1st argument which is sanitised)
 
 ### removeItemLabelText
 
-**Type:** `String/Function` **Default:** `Remove item: ${value}"`
+**Type:** `String/Function` **Default:** `Remove item: ${value}"` **Arguments:** `value`, `valueRaw`, `item`
 
 **Input types affected:** `text`, `select-one`, `select-multiple`
 
 **Usage:** The text for the remove button's aria label. To access the item's value, pass a function with a `value` argument (see the **default config** [https://github.com/jshjohnson/Choices#setup] for an example), otherwise pass a string.
+To access the item's label, use the 3rd argument. *Note*; this label is not escaped.
 
 Return type must be safe to insert into HTML (ie use the 1st argument which is sanitised)
 
 ### maxItemText
 
-**Type:** `String/Function` **Default:** `Only ${maxItemCount} values can be added`
+**Type:** `String/Function` **Default:** `Only ${maxItemCount} values can be added` **Arguments:** `maxItemCount`
 
 **Input types affected:** `text`
 
@@ -731,7 +763,7 @@ Return type must be safe to insert into HTML (ie use the 1st argument which is s
 
 ### valueComparer
 
-**Type:** `Function` **Default:** `strict equality`
+**Type:** `Function` **Default:** `strict equality` **Arguments:** `value1`, `value2`
 
 **Input types affected:** `select-one`, `select-multiple`
 
@@ -784,6 +816,7 @@ classNames: {
   selectedState: ['is-selected'],
   flippedState: ['is-flipped'],
   loadingState: ['is-loading'],
+  invalidState: ['is-invalid'],
   notice: ['choices__notice'],
   addChoice: ['choices__item--selectable', 'add-choice'],
   noResults: ['has-no-results'],
@@ -809,7 +842,7 @@ classNames: {
 
 ### callbackOnCreateTemplates(strToEl: (str: string) => HTMLElement, escapeForTemplate: (allowHTML: boolean, s: StringUntrusted | StringPreEscaped | string) => string, getClassNames: (s: Array<string> | string) => string)
 
-**Type:** `Function` **Default:** `null` **Arguments:** `strToEl`, `escapeForTemplate`
+**Type:** `Function` **Default:** `null` **Arguments:** `strToEl`, `escapeForTemplate`, `getClassNames`
 
 **Input types affected:** `text`, `select-one`, `select-multiple`
 
@@ -837,36 +870,39 @@ const example = new Choices(element, {
 or more complex:
 
 ```js
+// StrToEl = (str: string) => HTMLElement | HTMLInputElement | HTMLOptionElement;
+// EscapeForTemplateFn = (allowHTML: boolean, s: StringUntrusted | StringPreEscaped | string) => string;
+// GetClassNamesFn = (s: string | Array<string>) => string;
 const example = new Choices(element, {
-  callbackOnCreateTemplates: function(strToEl, escapeForTemplate, getClassNames) {
+  callbackOnCreateTemplates: function(strToEl /*:StrToEl*/, escapeForTemplate /*:EscapeForTemplateFn*/, getClassNames /*:GetClassNamesFn*/) {
     return {
       item: ({ classNames }, data) => {
-        return template(`
+        return strToEl(`
           <div class="${getClassNames(classNames.item).join(' ')} ${
           getClassNames(data.highlighted
             ? classNames.highlightedState
             : classNames.itemSelectable).join(' ')
         } ${
           data.placeholder ? classNames.placeholder : ''
-        }" data-item data-id="${data.id}" data-value="${escapeForTemplate(data.value)}" ${
+        }" data-item data-id="${data.id}" data-value="${escapeForTemplate(true, data.value)}" ${
           data.active ? 'aria-selected="true"' : ''
         } ${data.disabled ? 'aria-disabled="true"' : ''}>
-            <span>&bigstar;</span> ${escapeForTemplate(data.label)}
+            <span>&bigstar;</span> ${escapeForTemplate(true, data.label)}
           </div>
         `);
       },
       choice: ({ classNames }, data) => {
-        return template(`
+        return strToEl(`
           <div class="${getClassNames(classNames.item).join(' ')} ${getClassNames(classNames.itemChoice).join(' ')} ${
           getClassNames(data.disabled ? classNames.itemDisabled : classNames.itemSelectable).join(' ')
         }" data-select-text="${this.config.itemSelectText}" data-choice ${
           data.disabled
             ? 'data-choice-disabled aria-disabled="true"'
             : 'data-choice-selectable'
-        } data-id="${data.id}" data-value="${escapeForTemplate(data.value)}" ${
+        } data-id="${data.id}" data-value="${escapeForTemplate(true, data.value)}" ${
           data.groupId > 0 ? 'role="treeitem"' : 'role="option"'
         }>
-            <span>&bigstar;</span> ${escapeForTemplate(data.label)}
+            <span>&bigstar;</span> ${escapeForTemplate(true, data.label)}
           </div>
         `);
       },
@@ -1284,6 +1320,80 @@ Element.prototype.classList
 Element.prototype.closest
 Element.prototype.dataset
 Element.prototype.replaceChildren
+```
+
+## CSS custom properties
+
+Since version `11.2`, you are able to customize the behavior and CSS of Choices.js using the following
+[custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_cascading_variables/Using_CSS_custom_properties).
+
+| Property                          | Default                                   | Description                                                                 |
+|-----------------------------------|-------------------------------------------|-----------------------------------------------------------------------------|
+| `--choices-darken`                | `black`                                   | Darken color used within the color-mix                                      |
+| `--choices-lighten`               | `white`                                   | Ligten color used within the color-mix                                      |
+| `--choices-bg-color`              | `#f9f9f9`                                 | Background color of the choices element                                     |
+| `--choices-bg-color-disabled`     | `#eaeaea`                                 | Background color of a disabled choices element                              |
+| `--choices-bg-color-dropdown`     | `#fff`                                    | Background color of the dropdown                                            |
+| `--choices-text-color`            | `#333`                                    | Text color of choices                                                       |
+| `--choices-keyline-color`         | `#ddd`                                    | Border-colors within choices                                                |
+| `--choices-primary-color`         | `#005F75`                                 | Primary color                                                               |
+| `--choices-disabled-color`        | `#eaeaea`                                 | Background color of disabled items                                          |
+| `--choices-item-disabled-color`   | `#fff`                                    | Text color of disabled items                                                |
+| `--choices-invalid-color`         | `#d33141`                                 | Border color of the invalid state                                           |
+| `--choices-highlighted-color`     | `#f2f2f2`                                 | Highlight background of the choices items                                   |
+| `--choices-highlight-color`       | `#005F75`                                 | Focus color of the choices button                                           |
+| `--choices-font-size-lg`          | `16px`                                    | Basic font size for choices                                                 |
+| `--choices-font-size-md`          | `14px`                                    | Font size for medium choices items, e.g. the input field                    |
+| `--choices-font-size-sm`          | `12px`                                    | Font size for the small choices items, e.g. select multiple or explanations |
+| `--choices-guttering`             | `24px`                                    | Margin-Bottom of the choices wrapper                                        |
+| `--choices-border-radius`         | `2.5px`                                   | Border-radius of the choices element                                        |
+| `--choices-border-radius-item`    | `20px`                                    | Border-radius of the choices items                                          |
+| `--choices-z-index`               | `1`                                       | z-index of the active choices dropdown                                      |
+| `--choices-input-height`          | `44px`                                    | Height of the choices inner element                                         |
+| `--choices-width`                 | `100%`                                    | Width of the choices inner element                                          |
+| `--choices-base-border`           | `1px solid var( --choices-keyline-color)` | Bottom-border of the choices inner element                                  |
+| `--choices-multiple-item-margin`  | `3.75px`                                  | Margin of the dropdown items (multiple mode)                                |
+| `--choices-multiple-item-padding` | `4px 10px`                                | Padding of the dropdown items (multiple mode)                               |
+| `--choices-dropdown-item-padding` | `10px`                                    | Padding of the choices dropdown items                                       |
+| `--choices-list-single-padding`   | `4px 16px 4px 4px`                        | Padding of the listbox description                                          |
+| `--choices-input-margin-bottom`   | `5px`                                     | Margin-bottom of the choices input (text inputs)                            |
+| `--choices-input-padding`         | `4px 0 4px 2px`                           | Padding of the choices input                                                |
+| `--choices-inner-padding`         | `7.5px 7.5px 3.75px`                      | Padding of the choices inner element                                        |
+| `--choices-inner-one-padding`     | `7.5px`                                   | Padding of the choices inner element (Single select input)                  |
+| `--choices-arrow-size`            | `5px`                                     | Size of the choices dropdown symbol                                         |
+| `--choices-arrow-margin-top`      | `-2.5px`                                  | Top offset of the dropdown symbol                                           |
+| `--choices-arrow-margin-top-open` | `-7.5px`                                  | Top offset of the active dropdown symbol                                    |
+| `--choices-arrow-right`           | `11.5px`                                  | Right offset of the dropdown symbol                                         |
+| `--choices-icon-cross`            | `url("...")`                              | Button image                                                                |
+| `--choices-icon-cross-inverse`    | `url("...")`                              | Button image (inversed color)                                               |
+| `--choices-button-offset`         | `8px`                                     | Button offset                                                               |
+| `--choices-button-dimension`      | `8px`                                     | Button background size                                                      |
+| `--choices-button-line-height`    | `1`                                       | Button line height                                                          |
+| `--choices-button-border-radius`  | `0`                                       | Button border-radius                                                        |
+| `--choices-button-opacity`        | `0.75`                                    | Button opacity                                                              |
+| `--choices-button-opacity-hover`  | `1`                                       | Button opacity on hover                                                     |
+| `--choices-placeholder-opacity`   | `0.5`                                     | Placeholder opacity                                                         |
+
+### Dark mode example
+
+The current demo page uses the following variables for its dark mode
+
+```css
+@media (prefers-color-scheme: dark) {
+  :root {
+    --choices-primary-color: #38daff;
+    --choices-item-color: black;
+    --choices-bg-color: #101010;
+    --choices-bg-color-dropdown: #101010;
+    --choices-keyline-color: #3b3e40;
+    --choices-bg-color-disabled: #181a1b;
+    --choices-item-disabled-color: #eee;
+    --choices-disabled-color: #2d2d2d;
+    --choices-highlighted-color: #16292d;
+    --choices-icon-cross: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjEiIGhlaWdodD0iMjEiIHZpZXdCb3g9IjAgMCAyMSAyMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSIjMDAwIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0yLjU5Mi4wNDRsMTguMzY0IDE4LjM2NC0yLjU0OCAyLjU0OEwuMDQ0IDIuNTkyeiIvPjxwYXRoIGQ9Ik0wIDE4LjM2NEwxOC4zNjQgMGwyLjU0OCAyLjU0OEwyLjU0OCAyMC45MTJ6Ii8+PC9nPjwvc3ZnPg==");
+    --choices-icon-cross-inverse: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjEiIGhlaWdodD0iMjEiIHZpZXdCb3g9IjAgMCAyMSAyMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSIjRkZGIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0yLjU5Mi4wNDRsMTguMzY0IDE4LjM2NC0yLjU0OCAyLjU0OEwuMDQ0IDIuNTkyeiIvPjxwYXRoIGQ9Ik0wIDE4LjM2NEwxOC4zNjQgMGwyLjU0OCAyLjU0OEwyLjU0OCAyMC45MTJ6Ii8+PC9nPjwvc3ZnPg==");
+  }
+}
 ```
 
 ## Development

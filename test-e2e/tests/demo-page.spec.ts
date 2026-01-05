@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { test } from '../bundle-test';
 import { SelectTestSuit } from '../select-test-suit';
+import { DEFAULT_CLASSNAMES } from '../../src';
 // import { mkdirSync } from 'fs';
 // import path from 'path';
 
@@ -23,7 +24,6 @@ describe(`Choices`, () => {
 
       await suite.startWithClick();
       await suite.expectVisibleDropdown();
-      await suite.input.press('ArrowDown');
       await suite.input.press('ArrowDown');
       await suite.advanceClock();
 
@@ -52,6 +52,23 @@ describe(`Choices`, () => {
 
       await suite.expectedItemCount(1);
       await expect(suite.items.first()).toHaveText('Option 2');
+    });
+
+    test('show invalid on required form submit', async ({ page, bundle }) => {
+      const testId = 'invalid-select';
+      const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+      await suite.startWithClick();
+
+      await page
+        .getByTestId('invalid-form')
+        .getByRole('button', { name: /submit/i })
+        .click();
+
+      await suite.advanceClock();
+
+      await expect(suite.getWrapper()).toHaveClass(
+        `${DEFAULT_CLASSNAMES.containerOuter} ${DEFAULT_CLASSNAMES.invalidState}`,
+      );
     });
   });
 });

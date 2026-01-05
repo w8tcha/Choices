@@ -179,6 +179,10 @@ export class TestSuit {
     throw new Error('Not implemented');
   }
 
+  getWrapper(): Locator {
+    return this.wrapper;
+  }
+
   async expectedValue(text: string): Promise<void> {
     if (text !== '') {
       await expect(this.items.filter({ hasText: text })).not.toHaveCount(0);

@@ -11,6 +11,10 @@ assignees: ''
 A clear and concise description of what the bug is.
 
 **To Reproduce**
+Using https://jsfiddle.net/ to create a minimal reproducible example.
+
+Otherwise
+
 Steps to reproduce the behavior:
 1. Go to '...'
 2. Click on '....'

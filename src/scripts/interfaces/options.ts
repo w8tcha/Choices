@@ -200,7 +200,7 @@ export interface Options {
    *
    * @default
    * ```
-   * (value, valueRaw) => `Remove item`;
+   * (value, valueRaw, item) => `Remove item`;
    * ```
    */
   removeItemIconText: string | Types.NoticeStringFunction;
@@ -215,7 +215,7 @@ export interface Options {
    *
    * @default
    * ```
-   * (value, valueRaw) => `Remove item: ${value}`;
+   * (value, valueRaw, item) => `Remove item: ${value}`;
    * ```
    */
   removeItemLabelText: string | Types.NoticeStringFunction;
@@ -320,6 +320,15 @@ export interface Options {
    * @default true
    */
   searchChoices: boolean;
+
+  /**
+   * Whether disabled choices should be included in search results. If `true`, disabled choices will appear in search results but still cannot be selected.
+   *
+   * **Input types affected:** select-one, select-multiple
+   *
+   * @default false
+   */
+  searchDisabledChoices: boolean;
 
   /**
    * The minimum length a search value should be before choices are searched.
@@ -472,6 +481,15 @@ export interface Options {
   renderSelectedChoices: 'auto' | 'always' | boolean;
 
   /**
+   * Whether selected choices should be removed from the list during search.
+   *
+   * **Input types affected:** select-multiple
+   *
+   * @default false;
+   */
+  searchRenderSelectedChoices: boolean;
+
+  /**
    * The text that is shown whilst choices are being populated via AJAX.
    *
    * **Input types affected:** select-one, select-multiple
@@ -615,5 +633,5 @@ export interface Options {
    */
   callbackOnCreateTemplates: CallbackOnCreateTemplatesFn | null;
 
-  appendGroupInSearch: false;
+  appendGroupInSearch: boolean;
 }

@@ -427,6 +427,7 @@ describe('templates', () => {
             data-id="${data.id}"
             data-value="${data.value}"
             data-choice-selectable
+            aria-selected="false"
             id="${data.elementId}"
             role="option"
             >
@@ -492,6 +493,7 @@ describe('templates', () => {
             data-id="${data.id}"
             data-value="${data.value}"
             data-choice-selectable
+            aria-selected="true"
             id="${data.elementId}"
             role="option"
             >
@@ -525,6 +527,7 @@ describe('templates', () => {
             data-id="${data.id}"
             data-value="${data.value}"
             data-choice-selectable
+            aria-selected="false"
             id="${data.elementId}"
             role="option"
             >
@@ -557,6 +560,7 @@ describe('templates', () => {
             data-value="${data.value}"
             data-group-id="${data.groupId}"
             data-choice-selectable
+            aria-selected="false"
             id="${data.elementId}"
             role="treeitem"
             >

@@ -250,6 +250,26 @@ describe(`Choices - select multiple`, () => {
       });
     });
 
+    describe('aria attributes', () => {
+      const testId = 'disabled-choice';
+      test('aria-selected', async ({ page, bundle }) => {
+        const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+        await suite.startWithClick();
+
+        await suite.input.press('ArrowDown');
+        await expect(suite.choices.first()).toHaveAttribute('aria-selected', 'false');
+        await expect(suite.choices.nth(1)).toHaveAttribute('aria-selected', 'true');
+        await expect(suite.choices.nth(2)).toHaveAttribute('aria-selected', 'false');
+        await expect(suite.choices.nth(3)).not.toHaveAttribute('aria-selected');
+
+        await suite.input.press('ArrowUp');
+        await expect(suite.choices.first()).toHaveAttribute('aria-selected', 'true');
+        await expect(suite.choices.nth(1)).toHaveAttribute('aria-selected', 'false');
+        await expect(suite.choices.nth(2)).toHaveAttribute('aria-selected', 'false');
+        await expect(suite.choices.nth(3)).not.toHaveAttribute('aria-selected');
+      });
+    });
+
     describe('render selected choices', () => {
       const testId = 'render-selected-choices';
       describe('selecting choices', () => {
@@ -327,6 +347,21 @@ describe(`Choices - select multiple`, () => {
           await expect(suite.choices.first()).toHaveClass(/is-highlighted/);
           await expect(suite.choices.last()).not.toHaveClass(/is-highlighted/);
         });
+      });
+    });
+
+    describe('selected choices highlighted in dropdown', () => {
+      const selectedChoice = 'Choice 3';
+      test('on', async ({ page, bundle }) => {
+        const suite = new SelectTestSuit(page, bundle, testUrl, 'selected-choice-in-dropdown');
+        await suite.startWithClick();
+
+        await suite.expectedItemCount(2);
+        await suite.expectedValue(selectedChoice);
+
+        await expect(suite.choices.nth(2)).toHaveClass(/is-highlighted/);
+        /* known limitation due to highlighting the first choice only right now */
+        // await expect(suite.choices.nth(3)).toHaveClass(/is-highlighted/);
       });
     });
 
@@ -560,7 +595,6 @@ describe(`Choices - select multiple`, () => {
       });
     });
 
-    /*
     describe('search disabled', () => {
       const testId = 'search-disabled';
       test('does not display a search input', async ({ page, bundle }) => {
@@ -581,10 +615,9 @@ describe(`Choices - select multiple`, () => {
 
         await suite.expectedItemCount(1);
         await suite.expectedValue(text);
-        await suite.expectHiddenDropdown();
+        await suite.expectVisibleDropdown();
       });
     });
-    */
 
     describe('search floor', () => {
       const testId = 'search-floor';
@@ -612,6 +645,47 @@ describe(`Choices - select multiple`, () => {
             await suite.expectVisibleDropdown();
             await expect(suite.choices.first()).toHaveText(searchTerm);
           });
+        });
+      });
+    });
+
+    describe('search hide selected', () => {
+      const testId = 'search-hide-selected';
+
+      describe('selecting choices and searching', () => {
+        test('selected choices do not appear in search results', async ({ page, bundle }) => {
+          const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+          await suite.startWithClick();
+
+          await suite.getChoiceWithText('Choice 1').click();
+          await suite.expectedItemCount(1);
+
+          await suite.typeText('Choice');
+          await suite.expectVisibleDropdown();
+
+          await expect(suite.choices.filter({ hasText: 'Choice 1' })).toHaveCount(0);
+
+          await expect(suite.choices.filter({ hasText: 'Choice 2' })).toHaveCount(1);
+          await expect(suite.choices.filter({ hasText: 'Choice 3' })).toHaveCount(1);
+          await expect(suite.choices.filter({ hasText: 'Choice 4' })).toHaveCount(1);
+        });
+
+        test('selecting multiple choices hides all from search', async ({ page, bundle }) => {
+          const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+          await suite.startWithClick();
+
+          await suite.getChoiceWithText('Choice 1').click();
+          await suite.getChoiceWithText('Choice 2').click();
+          await suite.expectedItemCount(2);
+
+          await suite.typeText('Choice');
+          await suite.expectVisibleDropdown();
+
+          await expect(suite.choices.filter({ hasText: 'Choice 1' })).toHaveCount(0);
+          await expect(suite.choices.filter({ hasText: 'Choice 2' })).toHaveCount(0);
+
+          await expect(suite.choices.filter({ hasText: 'Choice 3' })).toHaveCount(1);
+          await expect(suite.choices.filter({ hasText: 'Choice 4' })).toHaveCount(1);
         });
       });
     });

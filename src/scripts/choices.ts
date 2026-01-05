@@ -13,6 +13,7 @@ import {
   escapeForTemplate,
   generateId,
   getAdjacentEl,
+  getChoiceForOutput,
   getClassNames,
   getClassNamesSelector,
   isScrolledIntoView,
@@ -259,7 +260,7 @@ class Choices {
 
     this._store = new Store(config);
     this._currentValue = '';
-    config.searchEnabled = (!isText && config.searchEnabled) || isSelectMultiple;
+    config.searchEnabled = !isText && config.searchEnabled;
     this._canSearch = config.searchEnabled;
     this._isScrollingOnIe = false;
     this._highlightPosition = 0;
@@ -303,6 +304,8 @@ class Choices {
     this._onEscapeKey = this._onEscapeKey.bind(this);
     this._onDirectionKey = this._onDirectionKey.bind(this);
     this._onDeleteKey = this._onDeleteKey.bind(this);
+    this._onChange = this._onChange.bind(this);
+    this._onInvalid = this._onInvalid.bind(this);
 
     // If element has already been initialised with Choices, fail silently
     if (this.passedElement.isActive) {
@@ -416,7 +419,7 @@ class Choices {
     this._store.dispatch(highlightItem(choice, true));
 
     if (runEvent) {
-      this.passedElement.triggerEvent(EventType.highlightItem, this._getChoiceForOutput(choice));
+      this.passedElement.triggerEvent(EventType.highlightItem, getChoiceForOutput(choice));
     }
 
     return this;
@@ -434,7 +437,7 @@ class Choices {
     this._store.dispatch(highlightItem(choice, false));
 
     if (runEvent) {
-      this.passedElement.triggerEvent(EventType.unhighlightItem, this._getChoiceForOutput(choice));
+      this.passedElement.triggerEvent(EventType.unhighlightItem, getChoiceForOutput(choice));
     }
 
     return this;
@@ -446,7 +449,7 @@ class Choices {
         if (!item.highlighted) {
           this._store.dispatch(highlightItem(item, true));
 
-          this.passedElement.triggerEvent(EventType.highlightItem, this._getChoiceForOutput(item));
+          this.passedElement.triggerEvent(EventType.highlightItem, getChoiceForOutput(item));
         }
       });
     });
@@ -460,7 +463,7 @@ class Choices {
         if (item.highlighted) {
           this._store.dispatch(highlightItem(item, false));
 
-          this.passedElement.triggerEvent(EventType.highlightItem, this._getChoiceForOutput(item));
+          this.passedElement.triggerEvent(EventType.highlightItem, getChoiceForOutput(item));
         }
       });
     });
@@ -519,6 +522,15 @@ class Choices {
       }
 
       this.passedElement.triggerEvent(EventType.showDropdown);
+
+      const activeElement = this.choiceList.element.querySelector<HTMLElement>(
+        getClassNamesSelector(this.config.classNames.selectedState),
+      );
+
+      if (activeElement !== null && !isScrolledIntoView(activeElement, this.choiceList.element)) {
+        // We use the native scrollIntoView function instead of choiceList.scrollToChildElement to avoid animated scroll.
+        activeElement.scrollIntoView();
+      }
     });
 
     return this;
@@ -528,6 +540,8 @@ class Choices {
     if (!this.dropdown.isActive) {
       return this;
     }
+
+    this._removeHighlightedChoices();
 
     requestAnimationFrame(() => {
       this.dropdown.hide();
@@ -546,7 +560,7 @@ class Choices {
 
   getValue<B extends boolean = false>(valueOnly?: B): EventChoiceValueType<B> | EventChoiceValueType<B>[] {
     const values = this._store.items.map((item) => {
-      return (valueOnly ? item.value : this._getChoiceForOutput(item)) as EventChoiceValueType<B>;
+      return (valueOnly ? item.value : getChoiceForOutput(item)) as EventChoiceValueType<B>;
     });
 
     return this._isSelectOneElement || this.config.singleModeForMultiSelect ? values[0] : values;
@@ -850,7 +864,7 @@ class Choices {
     this._searcher.reset();
 
     if (choice.selected) {
-      this.passedElement.triggerEvent(EventType.removeItem, this._getChoiceForOutput(choice));
+      this.passedElement.triggerEvent(EventType.removeItem, getChoiceForOutput(choice));
     }
 
     return this;
@@ -945,12 +959,7 @@ class Choices {
     const { config, _isSearching: isSearching } = this;
     const { activeGroups, activeChoices } = this._store;
 
-    let renderLimit = 0;
-    if (isSearching && config.searchResultLimit > 0) {
-      renderLimit = config.searchResultLimit;
-    } else if (config.renderChoiceLimit > 0) {
-      renderLimit = config.renderChoiceLimit;
-    }
+    const renderLimit = isSearching ? config.searchResultLimit : config.renderChoiceLimit;
 
     if (this._isSelectElement) {
       const backingOptions = activeChoices.filter((choice) => !choice.element);
@@ -963,11 +972,16 @@ class Choices {
     const renderableChoices = (choices: ChoiceFull[]): ChoiceFull[] =>
       choices.filter(
         (choice) =>
-          !choice.placeholder && (isSearching ? !!choice.rank : config.renderSelectedChoices || !choice.selected),
+          !choice.placeholder &&
+          (isSearching
+            ? (config.searchRenderSelectedChoices || !choice.selected) && !!choice.rank
+            : config.renderSelectedChoices || !choice.selected),
       );
 
+    const showLabel = config.appendGroupInSearch && isSearching;
     let selectableChoices = false;
-    const renderChoices = (choices: ChoiceFull[], withinGroup: boolean, groupLabel?: string): void => {
+    let highlightedEl: HTMLElement | null = null;
+    const renderChoices = (choices: ChoiceFull[], withinGroup: boolean): void => {
       if (isSearching) {
         // sortByRank is used to ensure stable sorting, as scores are non-unique
         // this additionally ensures fuseOptions.sortFn is not ignored
@@ -977,17 +991,25 @@ class Choices {
       }
 
       let choiceLimit = choices.length;
-      choiceLimit = !withinGroup && renderLimit && choiceLimit > renderLimit ? renderLimit : choiceLimit;
+      choiceLimit = !withinGroup && renderLimit > 0 && choiceLimit > renderLimit ? renderLimit : choiceLimit;
       choiceLimit--;
 
       choices.every((choice, index) => {
         // choiceEl being empty signals the contents has probably significantly changed
         const dropdownItem =
-          choice.choiceEl || this._templates.choice(config, choice, config.itemSelectText, groupLabel);
+          choice.choiceEl ||
+          this._templates.choice(
+            config,
+            choice,
+            config.itemSelectText,
+            showLabel && choice.group ? choice.group.label : undefined,
+          );
         choice.choiceEl = dropdownItem;
         fragment.appendChild(dropdownItem);
         if (isSearching || !choice.selected) {
           selectableChoices = true;
+        } else if (!highlightedEl) {
+          highlightedEl = dropdownItem;
         }
 
         return index < choiceLimit;
@@ -1004,7 +1026,6 @@ class Choices {
         renderChoices(
           activeChoices.filter((choice) => choice.placeholder && !choice.group),
           false,
-          undefined,
         );
       }
 
@@ -1018,7 +1039,6 @@ class Choices {
         renderChoices(
           activeChoices.filter((choice) => !choice.placeholder && !choice.group),
           false,
-          undefined,
         );
 
         activeGroups.forEach((group) => {
@@ -1030,11 +1050,11 @@ class Choices {
               dropdownGroup.remove();
               fragment.appendChild(dropdownGroup);
             }
-            renderChoices(groupChoices, true, config.appendGroupInSearch && isSearching ? group.label : undefined);
+            renderChoices(groupChoices, true);
           }
         });
       } else {
-        renderChoices(renderableChoices(activeChoices), false, undefined);
+        renderChoices(renderableChoices(activeChoices), false);
       }
     }
 
@@ -1051,9 +1071,7 @@ class Choices {
     this._renderNotice(fragment);
     this.choiceList.element.replaceChildren(fragment);
 
-    if (selectableChoices) {
-      this._highlightChoice();
-    }
+    this._highlightChoice(highlightedEl);
   }
 
   _renderItems(): void {
@@ -1185,23 +1203,12 @@ class Choices {
     }
   }
 
+  /**
+   * @deprecated Use utils.getChoiceForOutput
+   */
   // eslint-disable-next-line class-methods-use-this
   _getChoiceForOutput(choice: ChoiceFull, keyCode?: number): EventChoice {
-    return {
-      id: choice.id,
-      highlighted: choice.highlighted,
-      labelClass: choice.labelClass,
-      labelDescription: choice.labelDescription,
-      customProperties: choice.customProperties,
-      disabled: choice.disabled,
-      active: choice.active,
-      label: choice.label,
-      placeholder: choice.placeholder,
-      value: choice.value,
-      groupValue: choice.group ? choice.group.label : undefined,
-      element: choice.element,
-      keyCode,
-    };
+    return getChoiceForOutput(choice, keyCode);
   }
 
   _triggerChange(value): void {
@@ -1220,7 +1227,7 @@ class Choices {
       return;
     }
 
-    const id = element && parseDataSetId(element.parentElement);
+    const id = element && parseDataSetId(element.closest('[data-id]'));
     const itemToRemove = id && items.find((item) => item.id === id);
     if (!itemToRemove) {
       return;
@@ -1430,7 +1437,7 @@ class Choices {
 
     if (canAddItem && typeof config.addItemFilter === 'function' && !config.addItemFilter(value)) {
       canAddItem = false;
-      notice = resolveNoticeFunction(config.customAddItemText, value);
+      notice = resolveNoticeFunction(config.customAddItemText, value, undefined);
     }
 
     if (canAddItem) {
@@ -1444,13 +1451,13 @@ class Choices {
         }
         if (!config.duplicateItemsAllowed) {
           canAddItem = false;
-          notice = resolveNoticeFunction(config.uniqueItemText, value);
+          notice = resolveNoticeFunction(config.uniqueItemText, value, undefined);
         }
       }
     }
 
     if (canAddItem) {
-      notice = resolveNoticeFunction(config.addItemText, value);
+      notice = resolveNoticeFunction(config.addItemText, value, undefined);
     }
 
     if (notice) {
@@ -1512,6 +1519,7 @@ class Choices {
     const documentElement = this._docRoot;
     const outerElement = this.containerOuter.element;
     const inputElement = this.input.element;
+    const passedElement = this.passedElement.element;
 
     // capture events - can cancel event processing or propagation
     documentElement.addEventListener('touchend', this._onTouchEnd, true);
@@ -1556,6 +1564,16 @@ class Choices {
       });
     }
 
+    if (passedElement.hasAttribute('required')) {
+      passedElement.addEventListener('change', this._onChange, {
+        passive: true,
+      });
+
+      passedElement.addEventListener('invalid', this._onInvalid, {
+        passive: true,
+      });
+    }
+
     this.input.addEventListeners();
   }
 
@@ -1563,6 +1581,7 @@ class Choices {
     const documentElement = this._docRoot;
     const outerElement = this.containerOuter.element;
     const inputElement = this.input.element;
+    const passedElement = this.passedElement.element;
 
     documentElement.removeEventListener('touchend', this._onTouchEnd, true);
     outerElement.removeEventListener('keydown', this._onKeyDown, true);
@@ -1584,6 +1603,11 @@ class Choices {
 
     if (inputElement.form) {
       inputElement.form.removeEventListener('reset', this._onFormReset);
+    }
+
+    if (passedElement.hasAttribute('required')) {
+      passedElement.removeEventListener('change', this._onChange);
+      passedElement.removeEventListener('invalid', this._onInvalid);
     }
 
     this.input.removeEventListeners();
@@ -1884,7 +1908,7 @@ class Choices {
    */
   _onMouseDown(event: MouseEvent): void {
     const { target } = event;
-    if (!(target instanceof HTMLElement)) {
+    if (!(target instanceof Element)) {
       return;
     }
 
@@ -1996,7 +2020,7 @@ class Choices {
         containerOuter.removeFocusState();
 
         // Also close the dropdown if search is disabled
-        if (!this._canSearch) {
+        if (!this.config.searchEnabled) {
           this.hideDropdown(true);
         }
       }
@@ -2020,14 +2044,22 @@ class Choices {
     });
   }
 
-  _highlightChoice(el: HTMLElement | null = null): void {
-    const choices = Array.from(this.dropdown.element.querySelectorAll<HTMLElement>(selectableChoiceIdentifier));
-
-    if (!choices.length) {
+  _onChange(event: Event & { target: HTMLInputElement | HTMLSelectElement }): void {
+    if (!event.target.checkValidity()) {
       return;
     }
 
-    let passedEl = el;
+    this.containerOuter.removeInvalidState();
+  }
+
+  _onInvalid(): void {
+    this.containerOuter.addInvalidState();
+  }
+
+  /**
+   * Removes any highlighted choice options
+   */
+  _removeHighlightedChoices(): void {
     const { highlightedState } = this.config.classNames;
     const highlightedChoices = Array.from(
       this.dropdown.element.querySelectorAll<HTMLElement>(getClassNamesSelector(highlightedState)),
@@ -2038,6 +2070,19 @@ class Choices {
       removeClassesFromElement(choice, highlightedState);
       choice.setAttribute('aria-selected', 'false');
     });
+  }
+
+  _highlightChoice(el: HTMLElement | null = null): void {
+    const choices = Array.from(this.dropdown.element.querySelectorAll<HTMLElement>(selectableChoiceIdentifier));
+
+    if (!choices.length) {
+      return;
+    }
+
+    let passedEl = el;
+    const { highlightedState } = this.config.classNames;
+
+    this._removeHighlightedChoices();
 
     if (passedEl) {
       this._highlightPosition = choices.indexOf(passedEl);
@@ -2082,10 +2127,11 @@ class Choices {
     this._store.dispatch(addItem(item));
 
     if (withEvents) {
-      this.passedElement.triggerEvent(EventType.addItem, this._getChoiceForOutput(item));
+      const eventChoice = getChoiceForOutput(item);
+      this.passedElement.triggerEvent(EventType.addItem, eventChoice);
 
       if (userTriggered) {
-        this.passedElement.triggerEvent(EventType.choice, this._getChoiceForOutput(item));
+        this.passedElement.triggerEvent(EventType.choice, eventChoice);
       }
     }
   }
@@ -2101,7 +2147,7 @@ class Choices {
       this._clearNotice();
     }
 
-    this.passedElement.triggerEvent(EventType.removeItem, this._getChoiceForOutput(item));
+    this.passedElement.triggerEvent(EventType.removeItem, getChoiceForOutput(item));
   }
 
   _addChoice(choice: ChoiceFull, withEvents: boolean = true, userTriggered = false): void {
@@ -2244,24 +2290,24 @@ class Choices {
     // Wrapper inner container with outer container
     containerOuter.wrap(containerInner.element);
 
-    if (this._isSelectOneElement) {
-      this.input.placeholder = this.config.searchPlaceholderValue || '';
-    } else {
-      if (this._placeholderValue) {
-        this.input.placeholder = this._placeholderValue;
-      }
-      this.input.setWidth();
-    }
-
     containerOuter.element.appendChild(containerInner.element);
     containerOuter.element.appendChild(dropdownElement);
     containerInner.element.appendChild(this.itemList.element);
     dropdownElement.appendChild(this.choiceList.element);
 
-    if (!this._isSelectOneElement) {
-      containerInner.element.appendChild(this.input.element);
-    } else if (this.config.searchEnabled) {
-      dropdownElement.insertBefore(this.input.element, dropdownElement.firstChild);
+    if (this._isSelectOneElement) {
+      this.input.placeholder = this.config.searchPlaceholderValue || '';
+      if (this.config.searchEnabled) {
+        dropdownElement.insertBefore(this.input.element, dropdownElement.firstChild);
+      }
+    } else {
+      if (!this._isSelectMultipleElement || this.config.searchEnabled) {
+        containerInner.element.appendChild(this.input.element);
+      }
+      if (this._placeholderValue) {
+        this.input.placeholder = this._placeholderValue;
+      }
+      this.input.setWidth();
     }
 
     this._highlightPosition = 0;
