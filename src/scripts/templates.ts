@@ -190,6 +190,7 @@ const templates: TemplatesInterface = {
       const removeButton = document.createElement('button');
       removeButton.type = 'button';
       addClassesToElement(removeButton, button);
+
       const eventChoice = getChoiceForOutput(choice);
       setElementHtml(removeButton, true, resolveNoticeFunction(removeItemIconText, choice.value, eventChoice));
 

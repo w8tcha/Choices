@@ -932,7 +932,7 @@ var DEFAULT_CLASSNAMES = {
     placeholder: ['choices__placeholder'],
     group: ['choices__group'],
     groupHeading: ['choices__heading'],
-    button: ['choices__button btn-close'],
+    button: ['choices__button', 'btn-close'],
     activeState: ['is-active'],
     focusState: ['is-focused'],
     openState: ['is-open'],
@@ -985,7 +985,7 @@ var DEFAULT_CONFIG = {
     prependValue: null,
     appendValue: null,
     renderSelectedChoices: 'auto',
-    searchRenderSelectedChoices: true,
+    searchRenderSelectedChoices: false,
     loadingText: 'Loading...',
     noResultsText: 'No results found',
     noChoicesText: 'No choices to choose from',
@@ -994,9 +994,7 @@ var DEFAULT_CONFIG = {
     customAddItemText: 'Only values matching specific conditions can be added',
     addItemText: function (value) { return "Press Enter to add <b>\"".concat(value, "\"</b>"); },
     removeItemIconText: function () { return "Remove item"; },
-    removeItemLabelText: function (value, _valueRaw, i) {
-        return "Remove item: ".concat(i ? sanitise(i.label) : value);
-    },
+    removeItemLabelText: function (value) { return "Remove item: ".concat(value); },
     maxItemText: function (maxItemCount) { return "Only ".concat(maxItemCount, " values can be added"); },
     valueComparer: function (value1, value2) { return value1 === value2; },
     fuseOptions: {
