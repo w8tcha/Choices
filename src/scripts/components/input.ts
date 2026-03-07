@@ -2,41 +2,57 @@ import { ClassNames } from '../interfaces/class-names';
 import { PassedElementType, PassedElementTypes } from '../interfaces/passed-element-type';
 
 /**
+ * Returns true for Unicode code points that render as double-width
+ * (CJK, Hangul, fullwidth forms, etc.) relative to the CSS `ch` unit.
+ */
+function isWideChar(code: number): boolean {
+  /* eslint-disable no-mixed-operators */
+  return (
+    (code >= 0x1100 && code <= 0x115f) || // Hangul Jamo
+    code === 0x2329 ||
+    code === 0x232a ||
+    (code >= 0x2e80 && code <= 0x303e) || // CJK Radicals, Kangxi, CJK Symbols
+    (code >= 0x3041 && code <= 0x33bf) || // Hiragana, Katakana, Bopomofo, CJK Compat
+    (code >= 0x3400 && code <= 0x4dbf) || // CJK Extension A
+    (code >= 0x4e00 && code <= 0x9fff) || // CJK Unified Ideographs
+    (code >= 0xa000 && code <= 0xa4cf) || // Yi Syllables / Radicals
+    (code >= 0xa960 && code <= 0xa97f) || // Hangul Jamo Extended-A
+    (code >= 0xac00 && code <= 0xd7af) || // Hangul Syllables
+    (code >= 0xf900 && code <= 0xfaff) || // CJK Compatibility Ideographs
+    (code >= 0xfe10 && code <= 0xfe1f) || // Vertical Forms
+    (code >= 0xfe30 && code <= 0xfe6f) || // CJK Compatibility Forms
+    (code >= 0xff01 && code <= 0xff60) || // Fullwidth Latin / Punctuation
+    (code >= 0xffe0 && code <= 0xffe6) || // Fullwidth Signs
+    (code >= 0x1b000 && code <= 0x1b001) || // Kana Supplement
+    (code >= 0x20000 && code <= 0x2fffd) || // CJK Extension B–D
+    (code >= 0x30000 && code <= 0x3fffd) // CJK Extension E+
+  );
+  /* eslint-enable no-mixed-operators */
+}
+
+/**
  * Returns the display width of a string in `ch` units.
  * Wide characters (CJK, Hangul, fullwidth forms, etc.) count as 2,
  * all other characters count as 1. This matches how browsers render
  * these characters relative to the `ch` unit (width of '0').
+ *
+ * Uses `Intl.Segmenter` when available so that grapheme clusters
+ * (e.g. combining accents, emoji ZWJ sequences) are counted as a
+ * single visible character. Falls back to code-point iteration via
+ * `for...of` on environments without `Intl.Segmenter`.
  */
 function getStringWidth(str: string): number {
+  if (typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function') {
+    let width = 0;
+    for (const { segment } of new Intl.Segmenter().segment(str)) {
+      width += isWideChar(segment.codePointAt(0) ?? 0) ? 2 : 1;
+    }
+    return width;
+  }
+  // Fallback: iterate by Unicode code point (for...of splits surrogate pairs correctly)
   let width = 0;
   for (const char of str) {
-    const code = char.codePointAt(0) ?? 0;
-    /* eslint-disable no-mixed-operators */
-    if (
-      (code >= 0x1100 && code <= 0x115f) || // Hangul Jamo
-      code === 0x2329 ||
-      code === 0x232a ||
-      (code >= 0x2e80 && code <= 0x303e) || // CJK Radicals, Kangxi, CJK Symbols
-      (code >= 0x3041 && code <= 0x33bf) || // Hiragana, Katakana, Bopomofo, CJK Compat
-      (code >= 0x3400 && code <= 0x4dbf) || // CJK Extension A
-      (code >= 0x4e00 && code <= 0x9fff) || // CJK Unified Ideographs
-      (code >= 0xa000 && code <= 0xa4cf) || // Yi Syllables / Radicals
-      (code >= 0xa960 && code <= 0xa97f) || // Hangul Jamo Extended-A
-      (code >= 0xac00 && code <= 0xd7af) || // Hangul Syllables
-      (code >= 0xf900 && code <= 0xfaff) || // CJK Compatibility Ideographs
-      (code >= 0xfe10 && code <= 0xfe1f) || // Vertical Forms
-      (code >= 0xfe30 && code <= 0xfe6f) || // CJK Compatibility Forms
-      (code >= 0xff01 && code <= 0xff60) || // Fullwidth Latin / Punctuation
-      (code >= 0xffe0 && code <= 0xffe6) || // Fullwidth Signs
-      (code >= 0x1b000 && code <= 0x1b001) || // Kana Supplement
-      (code >= 0x20000 && code <= 0x2fffd) || // CJK Extension B–D
-      (code >= 0x30000 && code <= 0x3fffd) // CJK Extension E+
-    ) {
-      width += 2;
-    } else {
-      width += 1;
-    }
-    /* eslint-enable no-mixed-operators */
+    width += isWideChar(char.codePointAt(0) ?? 0) ? 2 : 1;
   }
   return width;
 }

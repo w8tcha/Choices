@@ -295,6 +295,16 @@ describe('components/input', () => {
         instance.setWidth();
         expect(instance.element.style.width).to.equal('6ch');
       });
+
+      it('counts a combining character sequence as a single character', () => {
+        // 'e\u0301' is e + combining acute accent = 1 visible glyph → 1ch → width 2ch
+        // Intl.Segmenter treats this as one grapheme cluster; code-point fallback
+        // would count it as two code points but both are non-wide so still 2ch.
+        instance.placeholder = '';
+        instance.element.value = 'e\u0301'; // é as two code points
+        instance.setWidth();
+        expect(instance.element.style.width).to.equal('2ch');
+      });
     });
   });
 
