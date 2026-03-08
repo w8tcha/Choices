@@ -41,13 +41,15 @@ function isWideChar(code: number): boolean {
  *   - https://github.com/surferseo/intl-segmenter-polyfill
  */
 function getStringWidth(str: string): number {
+  // @ts-expect-error choices.js targets ES2020, but Intl.Segmenter is defined in ES2022
   if (typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function') {
-    let width = 0;
-    for (const { segment } of new Intl.Segmenter().segment(str)) {
-      width += isWideChar(segment.codePointAt(0) ?? 0) ? 2 : 1;
-    }
-    return width;
+    // @ts-expect-error choices.js targets ES2020, but Intl.Segmenter is defined in ES2022
+    return [...new Intl.Segmenter().segment(str)].reduce(
+      (width, { segment }) => width + (isWideChar(segment.codePointAt(0) ?? 0) ? 2 : 1),
+      0,
+    );
   }
+
   return str.length;
 }
 
