@@ -32,14 +32,13 @@ function isWideChar(code: number): boolean {
 
 /**
  * Returns the display width of a string in `ch` units.
- * Wide characters (CJK, Hangul, fullwidth forms, etc.) count as 2,
- * all other characters count as 1. This matches how browsers render
- * these characters relative to the `ch` unit (width of '0').
+ * Uses `Intl.Segmenter` to split grapheme clusters, then counts wide
+ * characters (CJK, Hangul, fullwidth forms, etc.) as 2 and all others as 1.
  *
- * Uses `Intl.Segmenter` when available so that grapheme clusters
- * (e.g. combining accents, emoji ZWJ sequences) are counted as a
- * single visible character. Falls back to code-point iteration via
- * `for...of` on environments without `Intl.Segmenter`.
+ * Falls back to `str.length` on environments without `Intl.Segmenter`.
+ * For accurate CJK width in those environments, add a polyfill:
+ *   - https://github.com/cometkim/unicode-segmenter
+ *   - https://github.com/surferseo/intl-segmenter-polyfill
  */
 function getStringWidth(str: string): number {
   if (typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function') {
@@ -49,12 +48,7 @@ function getStringWidth(str: string): number {
     }
     return width;
   }
-  // Fallback: iterate by Unicode code point (for...of splits surrogate pairs correctly)
-  let width = 0;
-  for (const char of str) {
-    width += isWideChar(char.codePointAt(0) ?? 0) ? 2 : 1;
-  }
-  return width;
+  return str.length;
 }
 
 export default class Input {
