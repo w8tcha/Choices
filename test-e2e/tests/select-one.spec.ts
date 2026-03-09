@@ -1026,5 +1026,44 @@ describe(`Choices - select one`, () => {
         await suite.expectChoiceCount(2);
       });
     });
+
+    describe('Input width', () => {
+      describe('placeholder', () => {
+        const testId = 'input-width-placeholder';
+
+        test('sets minWidth from CJK placeholder', async ({ page, bundle }) => {
+          const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+          await suite.start();
+
+          const minWidth = await suite.input.evaluate((el) => (el as HTMLInputElement).style.minWidth);
+          expect(minWidth).toMatch(/^\d+ch$/);
+          expect(parseInt(minWidth, 10)).toBeGreaterThanOrEqual(2);
+        });
+      });
+
+      describe('typing', () => {
+        const testId = 'input-width-typing';
+
+        test('sets width for English character', async ({ page, bundle }) => {
+          const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+          await suite.startWithClick();
+          await suite.typeText('f');
+          await expect(suite.input).toHaveValue('f');
+
+          expect(await suite.input.evaluate((el) => (el as HTMLInputElement).style.width)).toEqual('2ch');
+        });
+
+        test('sets width for CJK character', async ({ page, bundle }) => {
+          const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+          await suite.startWithClick();
+          await suite.typeText('中');
+          await expect(suite.input).toHaveValue('中');
+
+          const width = await suite.input.evaluate((el) => (el as HTMLInputElement).style.width);
+          expect(width).toMatch(/^\d+ch$/);
+          expect(parseInt(width, 10)).toBeGreaterThanOrEqual(2);
+        });
+      });
+    });
   });
 });

@@ -84,10 +84,10 @@ describe('components/input', () => {
     });
 
     describe('when element is select one', () => {
-      it('does not set input width', () => {
+      it('sets input width', () => {
         instance.type = 'select-one';
         instance._onInput();
-        expect(setWidthStub.callCount).to.equal(0);
+        expect(setWidthStub.callCount).to.equal(1);
       });
     });
 

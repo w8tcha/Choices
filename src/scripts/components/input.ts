@@ -1,5 +1,5 @@
 import { ClassNames } from '../interfaces/class-names';
-import { PassedElementType, PassedElementTypes } from '../interfaces/passed-element-type';
+import { PassedElementType } from '../interfaces/passed-element-type';
 import { addClassesToElement } from '../lib/utils';
 
 export default class Input {
@@ -157,9 +157,7 @@ export default class Input {
   }
 
   _onInput(): void {
-    if (this.type !== PassedElementTypes.SelectOne) {
-      this.setWidth();
-    }
+    this.setWidth();
   }
 
   _onPaste(event: ClipboardEvent): void {
