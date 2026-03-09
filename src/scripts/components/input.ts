@@ -1,57 +1,6 @@
 import { ClassNames } from '../interfaces/class-names';
 import { PassedElementType, PassedElementTypes } from '../interfaces/passed-element-type';
-
-/**
- * Returns true for Unicode code points that render as double-width
- * (CJK, Hangul, fullwidth forms, etc.) relative to the CSS `ch` unit.
- */
-function isWideChar(code: number): boolean {
-  /* eslint-disable no-mixed-operators */
-  return (
-    (code >= 0x1100 && code <= 0x115f) || // Hangul Jamo
-    code === 0x2329 ||
-    code === 0x232a ||
-    (code >= 0x2e80 && code <= 0x303e) || // CJK Radicals, Kangxi, CJK Symbols
-    (code >= 0x3041 && code <= 0x33bf) || // Hiragana, Katakana, Bopomofo, CJK Compat
-    (code >= 0x3400 && code <= 0x4dbf) || // CJK Extension A
-    (code >= 0x4e00 && code <= 0x9fff) || // CJK Unified Ideographs
-    (code >= 0xa000 && code <= 0xa4cf) || // Yi Syllables / Radicals
-    (code >= 0xa960 && code <= 0xa97f) || // Hangul Jamo Extended-A
-    (code >= 0xac00 && code <= 0xd7af) || // Hangul Syllables
-    (code >= 0xf900 && code <= 0xfaff) || // CJK Compatibility Ideographs
-    (code >= 0xfe10 && code <= 0xfe1f) || // Vertical Forms
-    (code >= 0xfe30 && code <= 0xfe6f) || // CJK Compatibility Forms
-    (code >= 0xff01 && code <= 0xff60) || // Fullwidth Latin / Punctuation
-    (code >= 0xffe0 && code <= 0xffe6) || // Fullwidth Signs
-    (code >= 0x1b000 && code <= 0x1b001) || // Kana Supplement
-    (code >= 0x20000 && code <= 0x2fffd) || // CJK Extension B–D
-    (code >= 0x30000 && code <= 0x3fffd) // CJK Extension E+
-  );
-  /* eslint-enable no-mixed-operators */
-}
-
-/**
- * Returns the display width of a string in `ch` units.
- * Uses `Intl.Segmenter` to split grapheme clusters, then counts wide
- * characters (CJK, Hangul, fullwidth forms, etc.) as 2 and all others as 1.
- *
- * Falls back to `str.length` on environments without `Intl.Segmenter`.
- * For accurate CJK width in those environments, add a polyfill:
- *   - https://github.com/cometkim/unicode-segmenter
- *   - https://github.com/surferseo/intl-segmenter-polyfill
- */
-function getStringWidth(str: string): number {
-  // @ts-expect-error choices.js targets ES2020, but Intl.Segmenter is defined in ES2022
-  if (typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function') {
-    // @ts-expect-error choices.js targets ES2020, but Intl.Segmenter is defined in ES2022
-    return [...new Intl.Segmenter().segment(str)].reduce(
-      (width, { segment }) => width + (isWideChar(segment.codePointAt(0) ?? 0) ? 2 : 1),
-      0,
-    );
-  }
-
-  return str.length;
-}
+import { addClassesToElement } from '../lib/utils';
 
 export default class Input {
   element: HTMLInputElement;
@@ -158,17 +107,45 @@ export default class Input {
   }
 
   /**
-   * Set the correct input width based on placeholder
-   * value or input value
+   * Set the correct input width based on placeholder value or input value.
+   * Renders text into a hidden off-screen span that inherits the input's
+   * CSS classes and measures its pixel width, then converts to `ch` units.
+   * This correctly handles CJK, Hangul, fullwidth forms, emoji, and any
+   * font — no hard-coded code-point ranges required.
    */
   setWidth(): void {
-    // Resize input to contents or placeholder.
-    // Uses getStringWidth() instead of .length so that wide characters
-    // (CJK, Hangul, fullwidth forms, etc.) are counted as 2ch rather than 1ch,
-    // preventing placeholder text truncation for languages like Japanese.
     const { element } = this;
-    element.style.minWidth = `${getStringWidth(element.placeholder) + 1}ch`;
-    element.style.width = `${getStringWidth(element.value) + 1}ch`;
+    const { value, placeholder } = element;
+    let minWidth = 0;
+    let width = 0;
+
+    if (value || placeholder) {
+      const e = document.createElement('span');
+      e.style.position = 'absolute';
+      e.style.visibility = 'hidden';
+      e.style.whiteSpace = 'pre';
+      e.style.height = 'auto';
+      e.style.width = 'auto';
+      e.style.minWidth = '1ch';
+      addClassesToElement(e, Array.from(element.classList));
+      element.after(e);
+      const chInPx = e.clientWidth;
+
+      if (placeholder) {
+        e.innerText = placeholder;
+        minWidth = e.clientWidth / chInPx;
+      }
+
+      if (value) {
+        e.innerText = value;
+        width = e.clientWidth / chInPx;
+      }
+
+      e.remove();
+    }
+
+    element.style.minWidth = `${Math.ceil(minWidth) + 1}ch`;
+    element.style.width = `${Math.ceil(width) + 1}ch`;
   }
 
   setActiveDescendant(activeDescendantID: string): void {
