@@ -57,13 +57,17 @@ jobs:
 
     - name: Run Playwright tests
       run: npx playwright test --project=${{ matrix.browser }}
+
     - uses: actions/upload-artifact@v4
+      name: Upload screenshots to GitHub Actions Artifacts
       if: failure()
       with:
         name: screenshot-${{ matrix.os }}-${{ matrix.browser }}
         path: test-results/**/*.png
+
     - uses: actions/upload-artifact@v4
-      if: '!cancelled()'
+      name: Upload blob report to GitHub Actions Artifacts
+      if: ${{ !cancelled() }}
       with:
         name: blob-report-${{ matrix.os }}-${{ matrix.browser }}
         path: blob-report/
