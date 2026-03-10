@@ -1031,13 +1031,15 @@ describe(`Choices - select one`, () => {
       describe('placeholder', () => {
         const testId = 'input-width-placeholder';
 
-        test('sets minWidth from CJK placeholder', async ({ page, bundle }) => {
+        // For select-one the search input lives inside the dropdown and setWidth
+        // is only triggered by typing, not on open. Verify the placeholder
+        // attribute is correctly applied to the search input instead.
+        test('sets search placeholder on input when dropdown opens', async ({ page, bundle }) => {
           const suite = new SelectTestSuit(page, bundle, testUrl, testId);
-          await suite.start();
+          await suite.startWithClick();
 
-          const minWidth = await suite.input.evaluate((el) => (el as HTMLInputElement).style.minWidth);
-          expect(minWidth).toMatch(/^\d+ch$/);
-          expect(parseInt(minWidth, 10)).toBeGreaterThanOrEqual(2);
+          const placeholder = await suite.input.evaluate((el) => (el as HTMLInputElement).placeholder);
+          expect(placeholder).toEqual('搜索');
         });
       });
 
@@ -1050,11 +1052,9 @@ describe(`Choices - select one`, () => {
           await suite.typeText('f');
           await expect(suite.input).toHaveValue('f');
 
-          expect(await suite.input.evaluate((el) => (el as HTMLInputElement).style.width)).toEqual('2ch');
-        });
-
-        test('sets width for CJK character', async ({ page, bundle }) => {
-          const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+          const width = await suite.input.evaluate((el) => (el as HTMLInputElement).style.width);
+          expect(width).toMatch(/^\d+ch$/);
+          expect(parseInt(width, 10)).toBeGreaterThanOrEqual(2);
           await suite.startWithClick();
           await suite.typeText('中');
           await expect(suite.input).toHaveValue('中');
