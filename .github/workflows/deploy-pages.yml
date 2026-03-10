@@ -20,8 +20,6 @@ jobs:
           npm ci
           npm run build
           rm -rf public/test
-        env:
-          HUSKY_SKIP_INSTALL: true
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:

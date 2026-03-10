@@ -38,8 +38,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --no-audit
-        env:
-          HUSKY_SKIP_INSTALL: true
 
       - run: npm run build
 

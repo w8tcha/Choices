@@ -19,6 +19,4 @@ jobs:
         with:
           node-version: 24
       - run: npm ci
-        env:
-          HUSKY_SKIP_INSTALL: true
       - run: npm publish --provenance --access public

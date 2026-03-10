@@ -51,9 +51,6 @@ jobs:
 
     - name: Install dependencies
       run: npm ci --no-audit
-      env:
-        HUSKY_SKIP_INSTALL: true
-
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - run: npx playwright install-deps
