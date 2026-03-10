@@ -14,15 +14,12 @@ jobs:
           fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          registry-url: https://registry.npmjs.org/
+          node-version: 24
       - name: Build
         run: |
           npm ci
           npm run build
           rm -rf public/test
-        env:
-          HUSKY_SKIP_INSTALL: true
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
