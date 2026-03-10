@@ -1,4 +1,4 @@
-# Choices.js [![Actions Status](https://github.com/Choices-js/Choices/workflows/Build%20and%20test/badge.svg)](https://github.com/Choices-js/Choices/actions) [![Actions Status](https://github.com/Choices-js/Choices/workflows/Bundle%20size%20checks/badge.svg)](https://github.com/Choices-js/Choices/actions) [![npm](https://img.shields.io/npm/v/choices.js.svg)](https://www.npmjs.com/package/choices.js)
+# Choices.js [![Actions Status](https://github.com/Choices-js/Choices/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/Choices-js/Choices/actions) [![Actions Status](https://github.com/Choices-js/Choices/actions/workflows/bundlesize.yml/badge.svg)](https://github.com/Choices-js/Choices/actions) [![npm](https://img.shields.io/npm/v/choices.js.svg)](https://www.npmjs.com/package/choices.js)
 
 A vanilla, lightweight (~20kb gzipped 🎉), configurable select box/text input plugin. Similar to Select2 and Selectize but without the jQuery dependency.
 
