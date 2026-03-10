@@ -69,6 +69,6 @@ jobs:
       name: Upload blob report to GitHub Actions Artifacts
       if: ${{ !cancelled() }}
       with:
-        name: playwright-report
+        name: playwright-report-${{ matrix.os }}-${{ matrix.browser }}
         path: playwright-report/
         retention-days: 30
