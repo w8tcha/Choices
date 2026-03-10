@@ -846,7 +846,7 @@ classNames: {
 
 **Input types affected:** `text`, `select-one`, `select-multiple`
 
-**Usage:** Function to run on template creation. Through this callback it is possible to provide custom templates for the various components of Choices (see terminology). For Choices to work with custom templates, it is important you maintain the various data attributes defined [here](https://github.com/Choices-js/Choices/blob/master/src/scripts/templates.ts).
+**Usage:** Function to run on template creation. Through this callback it is possible to provide custom templates for the various components of Choices (see terminology). For Choices to work with custom templates, it is important you maintain the various data attributes defined [here](https://github.com/Choices-js/Choices/blob/main/src/scripts/templates.ts).
 If you want just extend a little original template then you may use `Choices.defaults.templates` to get access to
 original template function.
 
@@ -1294,7 +1294,7 @@ example.setChoiceByValue('Two'); // Choice with value of 'Two' has now been sele
 
 ## Browser compatibility
 
-Choices is compiled using [Babel](https://babeljs.io/) targeting browsers [with more than 1% of global usage](https://github.com/jshjohnson/Choices/blob/master/.browserslistrc) and expecting that features [listed below](https://github.com/jshjohnson/Choices/blob/master/.eslintrc.json#L62) are available or polyfilled in browser.
+Choices is compiled using [Babel](https://babeljs.io/) targeting browsers [with more than 1% of global usage](https://github.com/jshjohnson/Choices/blob/main/.browserslistrc) and expecting that features [listed below](https://github.com/jshjohnson/Choices/blob/main/.eslintrc.json#L62) are available or polyfilled in browser.
 You may see exact list of target browsers by running `npm exec browserslist` within this repository folder.
 If you need to support a browser that does not have one of the features listed below,
 I suggest including a polyfill from [cdnjs.cloudflare.com/polyfill](https://cdnjs.cloudflare.com/polyfill):
