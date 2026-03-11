@@ -1,4 +1,4 @@
-# Choices.js [![Actions Status](https://github.com/jshjohnson/Choices/workflows/Build%20and%20test/badge.svg)](https://github.com/jshjohnson/Choices/actions) [![Actions Status](https://github.com/jshjohnson/Choices/workflows/Bundle%20size%20checks/badge.svg)](https://github.com/jshjohnson/Choices/actions) [![npm](https://img.shields.io/npm/v/choices.js.svg)](https://www.npmjs.com/package/choices.js)
+# Choices.js [![Actions Status](https://github.com/Choices-js/Choices/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/Choices-js/Choices/actions) [![Actions Status](https://github.com/Choices-js/Choices/actions/workflows/bundlesize.yml/badge.svg)](https://github.com/Choices-js/Choices/actions) [![npm](https://img.shields.io/npm/v/choices.js.svg)](https://www.npmjs.com/package/choices.js)
 
 A vanilla, lightweight (~20kb gzipped 🎉), configurable select box/text input plugin. Similar to Select2 and Selectize but without the jQuery dependency.
 
@@ -169,7 +169,7 @@ import "choices.js/public/assets/styles/choices.css";
     resetScrollPosition: true,
     shouldSort: true,
     shouldSortItems: false,
-    sorter: () => {...},
+    sorter: (a, b) => sortByAlpha,
     shadowRoot: null,
     placeholder: true,
     placeholderValue: null,
@@ -609,7 +609,7 @@ const example = new Choices(element, {
   sorter: function(a, b) {
     return b.label.length - a.label.length;
   },
-};
+});
 ```
 
 ### placeholder
@@ -727,7 +727,7 @@ const example = new Choices(element, {
 
 **Input types affected:** `text`, `select-one`, `select-multiple`
 
-**Usage:** The text that is shown when a user has inputted a new item but has not pressed the enter key. To access the current input value, pass a function with a `value` argument (see the [default config](https://github.com/jshjohnson/Choices#setup) for an example), otherwise pass a string.
+**Usage:** The text that is shown when a user has inputted a new item but has not pressed the enter key. To access the current input value, pass a function with a `value` argument (see the [default config](https://github.com/Choices-js/Choices#setup) for an example), otherwise pass a string.
 
 Return type must be safe to insert into HTML (ie use the 1st argument which is sanitised)
 
@@ -737,7 +737,7 @@ Return type must be safe to insert into HTML (ie use the 1st argument which is s
 
 **Input types affected:** `text`, `select-one`, `select-multiple`
 
-**Usage:** The text/icon for the remove button. To access the item's value, pass a function with a `value` argument (see the **default config** [https://github.com/jshjohnson/Choices#setup] for an example), otherwise pass a string.
+**Usage:** The text/icon for the remove button. To access the item's value, pass a function with a `value` argument (see the **default config** [https://github.com/Choices-js/Choices#setup] for an example), otherwise pass a string.
 To access the item's label, use the 3rd argument. *Note*; this label is not escaped.
 
 Return type must be safe to insert into HTML (ie use the 1st argument which is sanitised)
@@ -748,7 +748,7 @@ Return type must be safe to insert into HTML (ie use the 1st argument which is s
 
 **Input types affected:** `text`, `select-one`, `select-multiple`
 
-**Usage:** The text for the remove button's aria label. To access the item's value, pass a function with a `value` argument (see the **default config** [https://github.com/jshjohnson/Choices#setup] for an example), otherwise pass a string.
+**Usage:** The text for the remove button's aria label. To access the item's value, pass a function with a `value` argument (see the **default config** [https://github.com/Choices-js/Choices#setup] for an example), otherwise pass a string.
 To access the item's label, use the 3rd argument. *Note*; this label is not escaped.
 
 Return type must be safe to insert into HTML (ie use the 1st argument which is sanitised)
@@ -759,7 +759,7 @@ Return type must be safe to insert into HTML (ie use the 1st argument which is s
 
 **Input types affected:** `text`
 
-**Usage:** The text that is shown when a user has focus on the input but has already reached the [max item count](https://github.com/jshjohnson/Choices#maxitemcount). To access the max item count, pass a function with a `maxItemCount` argument (see the [default config](https://github.com/jshjohnson/Choices#setup) for an example), otherwise pass a string.
+**Usage:** The text that is shown when a user has focus on the input but has already reached the [max item count](https://github.com/Choices-js/Choices#maxitemcount). To access the max item count, pass a function with a `maxItemCount` argument (see the [default config](https://github.com/Choices-js/Choices#setup) for an example), otherwise pass a string.
 
 ### valueComparer
 
@@ -774,7 +774,7 @@ Return type must be safe to insert into HTML (ie use the 1st argument which is s
 ```js
 const example = new Choices(element, {
   valueComparer: (a, b) => value.trim() === b.trim(),
-};
+});
 ```
 
 ### labelId
@@ -846,7 +846,7 @@ classNames: {
 
 **Input types affected:** `text`, `select-one`, `select-multiple`
 
-**Usage:** Function to run on template creation. Through this callback it is possible to provide custom templates for the various components of Choices (see terminology). For Choices to work with custom templates, it is important you maintain the various data attributes defined [here](https://github.com/Choices-js/Choices/blob/master/src/scripts/templates.ts).
+**Usage:** Function to run on template creation. Through this callback it is possible to provide custom templates for the various components of Choices (see terminology). For Choices to work with custom templates, it is important you maintain the various data attributes defined [here](https://github.com/Choices-js/Choices/blob/main/src/scripts/templates.ts).
 If you want just extend a little original template then you may use `Choices.defaults.templates` to get access to
 original template function.
 
@@ -1294,7 +1294,7 @@ example.setChoiceByValue('Two'); // Choice with value of 'Two' has now been sele
 
 ## Browser compatibility
 
-Choices is compiled using [Babel](https://babeljs.io/) targeting browsers [with more than 1% of global usage](https://github.com/jshjohnson/Choices/blob/master/.browserslistrc) and expecting that features [listed below](https://github.com/jshjohnson/Choices/blob/master/.eslintrc.json#L62) are available or polyfilled in browser.
+Choices is compiled using [Babel](https://babeljs.io/) targeting browsers [with more than 1% of global usage](https://github.com/Choices-js/Choices/blob/main/.browserslistrc) and expecting that features [listed below](https://github.com/Choices-js/Choices/blob/main/.eslintrc.json#L62) are available or polyfilled in browser.
 You may see exact list of target browsers by running `npm exec browserslist` within this repository folder.
 If you need to support a browser that does not have one of the features listed below,
 I suggest including a polyfill from [cdnjs.cloudflare.com/polyfill](https://cdnjs.cloudflare.com/polyfill):
