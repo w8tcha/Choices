@@ -14,7 +14,7 @@ LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
-/* global Reflect, Promise, SuppressedError, Symbol, Iterator */
+/* global Reflect, Promise, SuppressedError, Symbol */
 
 var extendStatics = function (d, b) {
   extendStatics = Object.setPrototypeOf || {
@@ -985,7 +985,7 @@ var DEFAULT_CONFIG = {
     prependValue: null,
     appendValue: null,
     renderSelectedChoices: 'auto',
-    searchRenderSelectedChoices: false,
+    searchRenderSelectedChoices: true,
     loadingText: 'Loading...',
     noResultsText: 'No results found',
     noChoicesText: 'No choices to choose from',

@@ -73,7 +73,7 @@ export const DEFAULT_CONFIG: Options = {
   prependValue: null,
   appendValue: null,
   renderSelectedChoices: 'auto',
-  searchRenderSelectedChoices: false,
+  searchRenderSelectedChoices: true,
   loadingText: 'Loading...',
   noResultsText: 'No results found',
   noChoicesText: 'No choices to choose from',
