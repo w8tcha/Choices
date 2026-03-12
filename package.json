@@ -112,7 +112,7 @@
     "@vitest/coverage-v8": "^4.0.18",
     "autoprefixer": "^10.4.27",
     "bundlesize2": "^0.0.35",
-    "chai": "^5.1.1",
+    "chai": "^6.2.2",
     "cross-process-lock": "^2.2.0",
     "csso-cli": "^4.0.2",
     "eslint": "^8.57.0",
