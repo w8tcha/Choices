@@ -725,8 +725,7 @@ class Choices {
         );
       }
 
-      // recursion with results, it's sync and choices were cleared already
-      return this.setChoices(fetcher, value, label, false);
+      choicesArrayOrFetcher = fetcher;
     }
 
     if (!Array.isArray(choicesArrayOrFetcher)) {
