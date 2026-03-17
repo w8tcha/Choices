@@ -527,8 +527,8 @@ class Choices {
       );
 
       if (activeElement !== null && !isScrolledIntoView(activeElement, this.choiceList.element)) {
-        // We use the native scrollIntoView function instead of choiceList.scrollToChildElement to avoid animated scroll.
-        activeElement.scrollIntoView();
+        // scrollIntoView can cause entire page scrolling, scrollToChildElement causes undesired animation
+        this.choiceList.element.scrollTop = activeElement.offsetTop;
       }
     });
 
