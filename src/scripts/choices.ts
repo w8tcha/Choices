@@ -777,6 +777,10 @@ class Choices {
 
       this.unhighlightAll();
     });
+    // ensure any notice is displayed as expected when the dropdown is open
+    if (this.dropdown.isActive && this._canAddUserChoices) {
+      this._canCreateItem(this.input.value);
+    }
 
     // @todo integrate with Store
     this._searcher.reset();
