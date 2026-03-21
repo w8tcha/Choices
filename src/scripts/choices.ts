@@ -725,6 +725,7 @@ class Choices {
         );
       }
 
+      // eslint-disable-next-line no-param-reassign
       choicesArrayOrFetcher = fetcher;
     }
 
