@@ -129,16 +129,16 @@ export default class Input {
       e.style.minWidth = '1ch';
       addClassesToElement(e, Array.from(element.classList));
       element.after(e);
-      const chInPx = e.clientWidth;
+      const chInPx = parseFloat(getComputedStyle(e).width);
 
       if (placeholder) {
         e.innerText = placeholder;
-        minWidth = e.clientWidth / chInPx;
+        minWidth = parseFloat(getComputedStyle(e).width) / chInPx;
       }
 
       if (value) {
         e.innerText = value;
-        width = e.clientWidth / chInPx;
+        width = parseFloat(getComputedStyle(e).width) / chInPx;
       }
 
       e.remove();
