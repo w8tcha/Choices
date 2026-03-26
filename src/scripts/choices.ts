@@ -1420,6 +1420,7 @@ class Choices {
       this._displayNotice(
         typeof maxItemText === 'function' ? maxItemText(maxItemCount) : maxItemText,
         NoticeTypes.addChoice,
+        false,
       );
 
       return false;
