@@ -1181,14 +1181,14 @@ describe(`Choices - select multiple`, () => {
 
           // The exact ch value depends on font metrics in the test environment.
           // Any typed character produces Math.ceil(px/chPx)+1 >= 2.
-          const width = await suite.input.evaluate((el) => (el as HTMLInputElement).style.width);
+          let width = await suite.input.evaluate((el) => (el as HTMLInputElement).style.width);
           expect(width).toMatch(/^\d+ch$/);
           expect(parseInt(width, 10)).toBeGreaterThanOrEqual(2);
           await suite.startWithClick();
           await suite.typeText('中');
           await expect(suite.input).toHaveValue('中');
 
-          const width = await suite.input.evaluate((el) => (el as HTMLInputElement).style.width);
+          width = await suite.input.evaluate((el) => (el as HTMLInputElement).style.width);
           expect(width).toMatch(/^\d+ch$/);
           expect(parseInt(width, 10)).toBeGreaterThanOrEqual(2);
         });
