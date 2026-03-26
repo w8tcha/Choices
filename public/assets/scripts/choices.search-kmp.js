@@ -564,14 +564,40 @@
             return this;
         };
         /**
-         * Set the correct input width based on placeholder
-         * value or input value
+         * Set the correct input width based on placeholder value or input value.
+         * Renders text into a hidden off-screen span that inherits the input's
+         * CSS classes and measures its pixel width, then converts to `ch` units.
+         * This correctly handles CJK, Hangul, fullwidth forms, emoji, and any
+         * font — no hard-coded code-point ranges required.
          */
         Input.prototype.setWidth = function () {
-            // Resize input to contents or placeholder
             var element = this.element;
-            element.style.minWidth = "".concat(element.placeholder.length + 1, "ch");
-            element.style.width = "".concat(element.value.length + 1, "ch");
+            var value = element.value, placeholder = element.placeholder;
+            var minWidth = 0;
+            var width = 0;
+            if (value || placeholder) {
+                var e = document.createElement('span');
+                e.style.position = 'absolute';
+                e.style.visibility = 'hidden';
+                e.style.whiteSpace = 'pre';
+                e.style.height = 'auto';
+                e.style.width = 'auto';
+                e.style.minWidth = '1ch';
+                addClassesToElement(e, Array.from(element.classList));
+                element.after(e);
+                var chInPx = parseFloat(getComputedStyle(e).width);
+                if (placeholder) {
+                    e.innerText = placeholder;
+                    minWidth = parseFloat(getComputedStyle(e).width) / chInPx;
+                }
+                if (value) {
+                    e.innerText = value;
+                    width = parseFloat(getComputedStyle(e).width) / chInPx;
+                }
+                e.remove();
+            }
+            element.style.minWidth = "".concat(Math.ceil(minWidth) + 1, "ch");
+            element.style.width = "".concat(Math.ceil(width) + 1, "ch");
         };
         Input.prototype.setActiveDescendant = function (activeDescendantID) {
             this.element.setAttribute('aria-activedescendant', activeDescendantID);
@@ -580,9 +606,7 @@
             this.element.removeAttribute('aria-activedescendant');
         };
         Input.prototype._onInput = function () {
-            if (this.type !== PassedElementTypes.SelectOne) {
-                this.setWidth();
-            }
+            this.setWidth();
         };
         Input.prototype._onPaste = function (event) {
             if (this.preventPaste) {
@@ -2254,6 +2278,7 @@
                 if (!Array.isArray(fetcher_1)) {
                     throw new TypeError(".setChoices first argument function must return either array of choices or Promise, got: ".concat(typeof fetcher_1));
                 }
+                // eslint-disable-next-line no-param-reassign
                 choicesArrayOrFetcher = fetcher_1;
             }
             if (!Array.isArray(choicesArrayOrFetcher)) {
@@ -2848,7 +2873,7 @@
             if (!config.singleModeForMultiSelect && maxItemCount > 0 && maxItemCount <= this._store.items.length) {
                 this.choiceList.element.replaceChildren('');
                 this._notice = undefined;
-                this._displayNotice(typeof maxItemText === 'function' ? maxItemText(maxItemCount) : maxItemText, NoticeTypes.addChoice);
+                this._displayNotice(typeof maxItemText === 'function' ? maxItemText(maxItemCount) : maxItemText, NoticeTypes.addChoice, false);
                 return false;
             }
             if (this._notice && this._notice.type === NoticeTypes.addChoice) {
