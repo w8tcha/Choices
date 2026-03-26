@@ -250,6 +250,39 @@ describe(`Choices - select multiple`, () => {
       });
     });
 
+    describe('input-items:5', () => {
+      const inputLimit = 5;
+      const testId = 'input-limit-5';
+      test('Limit selectable items not open', async ({ page, bundle }) => {
+        const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+        await suite.start();
+
+        await suite.expectedItemCount(1);
+        await suite.expectHiddenDropdown();
+        await suite.selectByClick();
+        await suite.expectVisibleDropdown();
+
+        for (let index = 0; index < inputLimit - 1; index++) {
+          await suite.enterKey();
+          await suite.expectedItemCount(index + 2);
+        }
+        await suite.expectedItemCount(5);
+
+        expect(await suite.items.count()).toEqual(inputLimit);
+        await suite.expectVisibleNoticeHtml(`Only ${inputLimit} values can be added`);
+      });
+    });
+
+    describe('input-items:1', () => {
+      const testId = 'input-limit-1';
+      test('dropdown not open', async ({ page, bundle }) => {
+        const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+        await suite.start();
+
+        await suite.expectHiddenDropdown();
+      });
+    });
+
     describe('aria attributes', () => {
       const testId = 'disabled-choice';
       test('aria-selected', async ({ page, bundle }) => {
