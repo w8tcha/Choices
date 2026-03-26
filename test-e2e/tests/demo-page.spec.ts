@@ -27,6 +27,12 @@ describe(`Choices`, () => {
       await suite.input.press('ArrowDown');
       await suite.advanceClock();
 
+      // extract font information
+      const font = await suite.input.evaluate((el) => getComputedStyle(el).font);
+      console.log('Font:' + font);
+      const fontSize = await suite.input.evaluate((el) => getComputedStyle(el).fontSize);
+      console.log('Font size:' + fontSize);
+
       await expect(page).toHaveScreenshot({
         fullPage: true,
         maxDiffPixels: 200,
