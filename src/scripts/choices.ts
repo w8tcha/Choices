@@ -528,8 +528,8 @@ class Choices {
       );
 
       if (activeElement !== null && !isScrolledIntoView(activeElement, this.choiceList.element)) {
-        // We use the native scrollIntoView function instead of choiceList.scrollToChildElement to avoid animated scroll.
-        activeElement.scrollIntoView();
+        // scrollIntoView can cause entire page scrolling, scrollToChildElement causes undesired animation
+        this.choiceList.element.scrollTop = activeElement.offsetTop;
       }
     });
 
@@ -726,8 +726,8 @@ class Choices {
         );
       }
 
-      // recursion with results, it's sync and choices were cleared already
-      return this.setChoices(fetcher, value, label, false);
+      // eslint-disable-next-line no-param-reassign
+      choicesArrayOrFetcher = fetcher;
     }
 
     if (!Array.isArray(choicesArrayOrFetcher)) {
@@ -780,6 +780,10 @@ class Choices {
 
       this.unhighlightAll();
     });
+    // ensure any notice is displayed as expected when the dropdown is open
+    if (this.dropdown.isActive && this._canAddUserChoices) {
+      this._canCreateItem(this.input.value);
+    }
 
     // @todo integrate with Store
     this._searcher.reset();
@@ -1418,6 +1422,7 @@ class Choices {
       this._displayNotice(
         typeof maxItemText === 'function' ? maxItemText(maxItemCount) : maxItemText,
         NoticeTypes.addChoice,
+        false,
       );
 
       return false;

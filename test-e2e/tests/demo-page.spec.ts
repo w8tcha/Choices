@@ -27,6 +27,10 @@ describe(`Choices`, () => {
       await suite.input.press('ArrowDown');
       await suite.advanceClock();
 
+      const font = await suite.input.evaluate((el) => getComputedStyle(el).font);
+      // eslint-disable-next-line no-console
+      console.log(`Font:${font}`);
+
       await expect(page).toHaveScreenshot({
         fullPage: true,
         maxDiffPixels: 200,

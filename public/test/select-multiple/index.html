@@ -1253,6 +1253,89 @@
           </script>
         </div>
 
+        <div data-test-hook="input-width-placeholder">
+          <label for="choices-input-width-placeholder">Input width with CJK placeholder</label>
+          <select
+            class="form-control"
+            name="choices-input-width-placeholder"
+            id="choices-input-width-placeholder"
+            multiple
+          >
+            <option value="Choice 1">Choice 1</option>
+            <option value="Choice 2">Choice 2</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              new Choices('#choices-input-width-placeholder', {
+                searchPlaceholderValue: '搜索',
+              });
+            });
+          </script>
+        </div>
+
+        <div data-test-hook="input-width-typing">
+          <label for="choices-input-width-typing">Input width while typing</label>
+          <select
+            class="form-control"
+            name="choices-input-width-typing"
+            id="choices-input-width-typing"
+            multiple
+          >
+            <option value="Choice 1">Choice 1</option>
+            <option value="Choice 2">Choice 2</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              new Choices('#choices-input-width-typing', {});
+            });
+          </script>
+        </div>
+
+        <div data-test-hook="input-limit-1">
+          <label for="input-limit-1">Input limit: 1</label>
+          <select
+            class="form-control"
+            data-trigger
+            name="input-limit-1"
+            id="input-limit-1"
+            multiple
+          >
+            <option value="Choice 1" selected>Choice 1</option>
+            <option value="Choice 2">Choice 2</option>
+            <option value="Choice 3">Choice 3</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              new Choices('#input-limit-1', {
+                maxItemCount: 1,
+              });
+            });
+          </script>
+        </div>
+        <div data-test-hook="input-limit-5">
+          <label for="input-limit-5">Input limit: 5</label>
+          <select
+            class="form-control"
+            data-trigger
+            name="input-limit-5"
+            id="input-limit-5"
+            multiple
+          >
+            <option value="Choice 1" selected>Choice 1</option>
+            <option value="Choice 2">Choice 2</option>
+            <option value="Choice 3">Choice 3</option>
+            <option value="Choice 4">Choice 4</option>
+            <option value="Choice 5">Choice 5</option>
+            <option value="Choice 6">Choice 6</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              new Choices('#input-limit-5', {
+                maxItemCount: 5,
+              });
+            });
+          </script>
+        </div>
       </div>
     </div>
   </body>

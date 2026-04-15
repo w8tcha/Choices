@@ -250,6 +250,39 @@ describe(`Choices - select multiple`, () => {
       });
     });
 
+    describe('input-items:5', () => {
+      const inputLimit = 5;
+      const testId = 'input-limit-5';
+      test('Limit selectable items not open', async ({ page, bundle }) => {
+        const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+        await suite.start();
+
+        await suite.expectedItemCount(1);
+        await suite.expectHiddenDropdown();
+        await suite.selectByClick();
+        await suite.expectVisibleDropdown();
+
+        for (let index = 0; index < inputLimit - 1; index++) {
+          await suite.enterKey();
+          await suite.expectedItemCount(index + 2);
+        }
+        await suite.expectedItemCount(5);
+
+        expect(await suite.items.count()).toEqual(inputLimit);
+        await suite.expectVisibleNoticeHtml(`Only ${inputLimit} values can be added`);
+      });
+    });
+
+    describe('input-items:1', () => {
+      const testId = 'input-limit-1';
+      test('dropdown not open', async ({ page, bundle }) => {
+        const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+        await suite.start();
+
+        await suite.expectHiddenDropdown();
+      });
+    });
+
     describe('aria attributes', () => {
       const testId = 'disabled-choice';
       test('aria-selected', async ({ page, bundle }) => {
@@ -1151,6 +1184,47 @@ describe(`Choices - select multiple`, () => {
         await suite.expectedValue('Choice 2');
         await suite.expectedItemCount(1);
         await suite.expectChoiceCount(1);
+      });
+    });
+
+    describe('Input width', () => {
+      describe('placeholder', () => {
+        const testId = 'input-width-placeholder';
+
+        // CI headless environments may not have CJK fonts installed, causing the
+        // DOM measurement to return 0px for CJK chars. Just verify the style is
+        // set in ch units — not the exact numeric value.
+        test('sets minWidth from CJK placeholder', async ({ page, bundle }) => {
+          const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+          await suite.start();
+
+          const minWidth = await suite.input.evaluate((el) => (el as HTMLInputElement).style.minWidth);
+          expect(minWidth).toMatch(/^\d+ch$/);
+        });
+      });
+
+      describe('typing', () => {
+        const testId = 'input-width-typing';
+
+        test('sets width for English character', async ({ page, bundle }) => {
+          const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+          await suite.startWithClick();
+          await suite.typeText('f');
+          await expect(suite.input).toHaveValue('f');
+
+          // The exact ch value depends on font metrics in the test environment.
+          // Any typed character produces Math.ceil(px/chPx)+1 >= 2.
+          let width = await suite.input.evaluate((el) => (el as HTMLInputElement).style.width);
+          expect(width).toMatch(/^\d+ch$/);
+          expect(parseInt(width, 10)).toBeGreaterThanOrEqual(2);
+          await suite.startWithClick();
+          await suite.typeText('中');
+          await expect(suite.input).toHaveValue('中');
+
+          width = await suite.input.evaluate((el) => (el as HTMLInputElement).style.width);
+          expect(width).toMatch(/^\d+ch$/);
+          expect(parseInt(width, 10)).toBeGreaterThanOrEqual(2);
+        });
       });
     });
   });
