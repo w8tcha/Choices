@@ -6,7 +6,6 @@ import typescript from '@rollup/plugin-typescript';
 import * as fs from 'node:fs';
 import server from './server.mjs';
 
-// @ts-ignore
 const pckg = require('../package.json');
 
 const buildFeatures = {
