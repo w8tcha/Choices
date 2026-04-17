@@ -1,6 +1,5 @@
 import { ClassNames } from '../interfaces/class-names';
 import { PassedElementType } from '../interfaces/passed-element-type';
-import { addClassesToElement } from '../lib/utils';
 
 export default class Input {
   element: HTMLInputElement;
@@ -115,37 +114,10 @@ export default class Input {
    */
   setWidth(): void {
     const { element } = this;
-    const { value, placeholder } = element;
-    let minWidth = 0;
-    let width = 0;
 
-    if (value || placeholder) {
-      const e = document.createElement('span');
-      e.style.position = 'absolute';
-      e.style.visibility = 'hidden';
-      e.style.whiteSpace = 'pre';
-      e.style.height = 'auto';
-      e.style.width = 'auto';
-      e.style.minWidth = '1ch';
-      addClassesToElement(e, Array.from(element.classList));
-      element.after(e);
-      const chInPx = parseFloat(getComputedStyle(e).width);
-
-      if (placeholder) {
-        e.innerText = placeholder;
-        minWidth = parseFloat(getComputedStyle(e).width) / chInPx;
-      }
-
-      if (value) {
-        e.innerText = value;
-        width = parseFloat(getComputedStyle(e).width) / chInPx;
-      }
-
-      e.remove();
-    }
-
-    element.style.minWidth = `${Math.ceil(minWidth) + 1}ch`;
-    element.style.width = `${Math.ceil(width) + 1}ch`;
+    element.style.minWidth = `5ch`;
+    element.style.width = 'auto';
+    element.style.fieldSizing = 'content';
   }
 
   setActiveDescendant(activeDescendantID: string): void {
