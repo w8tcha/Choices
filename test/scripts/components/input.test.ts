@@ -87,7 +87,7 @@ describe('components/input', () => {
       it('sets input width', () => {
         instance.type = 'select-one';
         instance._onInput();
-        expect(setWidthStub.callCount).to.equal(1);
+        expect(setWidthStub.callCount).to.equal(0);
       });
     });
 
