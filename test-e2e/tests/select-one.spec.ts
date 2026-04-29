@@ -1049,7 +1049,7 @@ describe(`Choices - select one`, () => {
           const suite = new SelectTestSuit(page, bundle, testUrl, testId);
           await suite.startWithClick();
 
-          const originalWidth = await suite.input.evaluate((el) => (el as HTMLInputElement).style.width);
+          const originalWidth = parseInt(await suite.input.evaluate((el) => (el as HTMLInputElement).style.width), 10);
           await suite.typeText('f');
           await expect(suite.input).toHaveValue('f');
 
