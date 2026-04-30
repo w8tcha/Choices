@@ -1,5 +1,18 @@
 # Changelog
 
+## [11.2.3] (2026-04-30)
+
+### Bugfixes
+- Fix search input width unexpectedly collapses for select-one backing elements (Fix [#1399](https://github.com/Choices-js/Choices/issues/1399)) [#1401](https://github.com/Choices-js/Choices/pull/1401)
+
+## [11.2.2] (2026-04-14)
+
+### Bugfixes
+- Fix maxItemText would cause the dropdown to display if choices.js is created with that many items selected (Fix [#1299](https://github.com/Choices-js/Choices/issues/1299)) @Xon [#1393](https://github.com/Choices-js/Choices/pull/1393)
+- Fix non-fixed width font support when computing width for input element @terminalchai (#1384](https://github.com/Choices-js/Choices/pull/1384)
+- Fix setChoices() could cause the add choice notice to incorrectly render and replaceChoices/clearSearchFlag/replaceItems arguments could be ignored @Xon [#1389](https://github.com/Choices-js/Choices/pull/1389)
+- Fix opening the dropdown could cause the entire page to scroll @Xon [#1388](https://github.com/Choices-js/Choices/pull/1388)
+
 ## [11.2.0] (2026-01-05)
 
 ### Features
@@ -9,7 +22,7 @@
 - Improve UX on the select dropdown [#1361](https://github.com/Choices-js/Choices/pull/1361)
 - Add `searchDisabledChoices` configuration option to allow disabled choices to appear in search results [#1357](https://github.com/Choices-js/Choices/pull/1357)
 - Add additional SCSS variables [#1304](https://github.com/Choices-js/Choices/pull/1304)
-- Add CSS custom properties support (+ dark mode for the intro page) (#1335](https://github.com/Choices-js/Choices/pull/1335)
+- Add CSS custom properties support (+ dark mode for the intro page) [#1335](https://github.com/Choices-js/Choices/pull/1335)
 - Soften constraints on remove buttons [#1338](https://github.com/Choices-js/Choices/pull/1338)
 
 ### Bugfixes
