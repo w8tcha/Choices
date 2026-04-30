@@ -130,15 +130,19 @@ export default class Input {
       addClassesToElement(e, Array.from(element.classList));
       element.after(e);
       const chInPx = parseFloat(getComputedStyle(e).width);
+      if (Number.isNaN(chInPx)) {
+        minWidth = placeholder.length;
+        width = value.length;
+      } else {
+        if (placeholder) {
+          e.innerText = placeholder;
+          minWidth = parseFloat(getComputedStyle(e).width) / chInPx;
+        }
 
-      if (placeholder) {
-        e.innerText = placeholder;
-        minWidth = parseFloat(getComputedStyle(e).width) / chInPx;
-      }
-
-      if (value) {
-        e.innerText = value;
-        width = parseFloat(getComputedStyle(e).width) / chInPx;
+        if (value) {
+          e.innerText = value;
+          width = parseFloat(getComputedStyle(e).width) / chInPx;
+        }
       }
 
       e.remove();
