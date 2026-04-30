@@ -1,5 +1,5 @@
 import { ClassNames } from '../interfaces/class-names';
-import { PassedElementType } from '../interfaces/passed-element-type';
+import { PassedElementType, PassedElementTypes } from '../interfaces/passed-element-type';
 import { addClassesToElement } from '../lib/utils';
 
 export default class Input {
@@ -130,15 +130,19 @@ export default class Input {
       addClassesToElement(e, Array.from(element.classList));
       element.after(e);
       const chInPx = parseFloat(getComputedStyle(e).width);
+      if (Number.isNaN(chInPx)) {
+        minWidth = placeholder.length;
+        width = value.length;
+      } else {
+        if (placeholder) {
+          e.innerText = placeholder;
+          minWidth = parseFloat(getComputedStyle(e).width) / chInPx;
+        }
 
-      if (placeholder) {
-        e.innerText = placeholder;
-        minWidth = parseFloat(getComputedStyle(e).width) / chInPx;
-      }
-
-      if (value) {
-        e.innerText = value;
-        width = parseFloat(getComputedStyle(e).width) / chInPx;
+        if (value) {
+          e.innerText = value;
+          width = parseFloat(getComputedStyle(e).width) / chInPx;
+        }
       }
 
       e.remove();
@@ -157,7 +161,9 @@ export default class Input {
   }
 
   _onInput(): void {
-    this.setWidth();
+    if (this.type !== PassedElementTypes.SelectOne) {
+      this.setWidth();
+    }
   }
 
   _onPaste(event: ClipboardEvent): void {
