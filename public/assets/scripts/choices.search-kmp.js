@@ -583,7 +583,9 @@
             this.element.removeAttribute('aria-activedescendant');
         };
         Input.prototype._onInput = function () {
-            this.setWidth();
+            if (this.type !== PassedElementTypes.SelectOne) {
+                this.setWidth();
+            }
         };
         Input.prototype._onPaste = function (event) {
             if (this.preventPaste) {

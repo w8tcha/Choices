@@ -38,6 +38,10 @@ export class SearchByFuse<T extends object> implements Searcher<T> {
   }
 
   search(needle: string): SearchResult<T>[] {
+    if (!needle) {
+      return [];
+    }
+
     if (!this._fuse) {
       if (searchFuse === 'full') {
         this._fuse = new FuseFull<T>(this._haystack, this._fuseOptions);
