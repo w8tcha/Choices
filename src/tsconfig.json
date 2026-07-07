@@ -3,6 +3,7 @@
     "module": "es6",
     "lib": ["es2017", "dom"],
     "target": "es5",
+    "ignoreDeprecations": "6.0",
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
@@ -15,7 +16,8 @@
     "strictNullChecks": true,
     "newLine": "lf",
     "declaration": false,
-    "declarationMap": false
+    "declarationMap": false,
+    "types": ["@types/node"]
   },
   "include": ["."],
   "exclude": ["**/node_modules", "**/public"]

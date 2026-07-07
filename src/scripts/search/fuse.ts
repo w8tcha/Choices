@@ -1,6 +1,5 @@
-// eslint-disable-next-line import/no-named-default
 import { default as FuseFull, IFuseOptions } from 'fuse.js';
-// eslint-disable-next-line import/no-named-default
+// eslint-disable-next-line import/no-unresolved -- eslint-import-resolver-node doesn't follow package.json "exports" subpaths
 import { default as FuseBasic } from 'fuse.js/basic';
 import { Options } from '../interfaces/options';
 import { Searcher, SearchResult } from '../interfaces/search';

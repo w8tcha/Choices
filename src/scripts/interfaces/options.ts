@@ -3,7 +3,7 @@ import { InputChoice } from './input-choice';
 import { ClassNames } from './class-names';
 import { PositionOptionsType } from './position-options-type';
 import { Types } from './types';
-// eslint-disable-next-line import/no-cycle
+
 import { CallbackOnCreateTemplatesFn } from './templates';
 
 export const ObjectsInConfig: string[] = ['fuseOptions', 'classNames'];

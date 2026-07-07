@@ -4,11 +4,7 @@ import { SearchResult } from '../interfaces/search';
 import { AnyAction } from '../interfaces/store';
 
 export type ChoiceActions =
-  | AddChoiceAction
-  | RemoveChoiceAction
-  | FilterChoicesAction
-  | ActivateChoicesAction
-  | ClearChoicesAction;
+  AddChoiceAction | RemoveChoiceAction | FilterChoicesAction | ActivateChoicesAction | ClearChoicesAction;
 
 export interface AddChoiceAction extends AnyAction<typeof ActionType.ADD_CHOICE> {
   choice: ChoiceFull;
@@ -29,7 +25,7 @@ export interface ActivateChoicesAction extends AnyAction<typeof ActionType.ACTIV
 /**
  * @deprecated use clearStore() or clearChoices() instead.
  */
-export interface ClearChoicesAction extends AnyAction<typeof ActionType.CLEAR_CHOICES> {}
+export type ClearChoicesAction = AnyAction<typeof ActionType.CLEAR_CHOICES>;
 
 export const addChoice = (choice: ChoiceFull): AddChoiceAction => ({
   type: ActionType.ADD_CHOICE,

@@ -1,4 +1,3 @@
-/* eslint-disable no-new-wrappers */
 import { expect } from 'chai';
 import { stub } from 'sinon';
 

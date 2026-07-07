@@ -1,7 +1,7 @@
 import { StringUntrusted } from './string-untrusted';
 import { StringPreEscaped } from './string-pre-escaped';
 import { Types } from './types';
-// eslint-disable-next-line import/no-cycle
+
 import { GroupFull } from './group-full';
 
 /*

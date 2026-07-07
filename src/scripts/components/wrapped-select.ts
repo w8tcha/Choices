@@ -67,7 +67,6 @@ export default class WrappedSelect extends WrappedElement<HTMLSelectElement> {
     return choices;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   _optionToChoice(option: HTMLOptionElement): ChoiceFull {
     // option.value returns the label if there is no value attribute, which can break legacy placeholder attribute support
     if (!option.hasAttribute('value') && option.hasAttribute('placeholder')) {

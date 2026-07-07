@@ -30,7 +30,6 @@ export default class Store<T> implements IStore {
     this._context = context;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   get defaultState(): State {
     return {
       groups: [],
@@ -39,7 +38,6 @@ export default class Store<T> implements IStore {
     };
   }
 
-  // eslint-disable-next-line class-methods-use-this
   changeSet(init: boolean): StateChangeSet {
     return {
       groups: init,

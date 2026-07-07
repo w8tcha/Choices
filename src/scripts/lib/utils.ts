@@ -195,7 +195,7 @@ export const dispatchEvent = (element: HTMLElement, type: EventTypes, customArgs
   return element.dispatchEvent(event);
 };
 
-export const cloneObject = <T>(obj: T): T => (obj !== undefined ? JSON.parse(JSON.stringify(obj)) : undefined);
+export const cloneObject = <T>(obj: T): T => (obj !== undefined ? JSON.parse(JSON.stringify(obj)) : obj);
 
 /**
  * Returns an array of keys present on the first but missing on the second object
@@ -236,7 +236,7 @@ export const parseCustomProperties = (customProperties?: string): object | strin
   if (typeof customProperties !== 'undefined') {
     try {
       return JSON.parse(customProperties);
-    } catch (e) {
+    } catch {
       return customProperties;
     }
   }

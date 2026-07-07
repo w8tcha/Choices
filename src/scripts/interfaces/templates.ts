@@ -2,7 +2,7 @@ import { PassedElementType } from './passed-element-type';
 import { StringPreEscaped } from './string-pre-escaped';
 import { ChoiceFull } from './choice-full';
 import { GroupFull } from './group-full';
-// eslint-disable-next-line import/no-cycle
+
 import { Options } from './options';
 import { Types } from './types';
 

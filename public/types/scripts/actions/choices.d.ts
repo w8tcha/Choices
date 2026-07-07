@@ -18,8 +18,7 @@ export interface ActivateChoicesAction extends AnyAction<typeof ActionType.ACTIV
 /**
  * @deprecated use clearStore() or clearChoices() instead.
  */
-export interface ClearChoicesAction extends AnyAction<typeof ActionType.CLEAR_CHOICES> {
-}
+export type ClearChoicesAction = AnyAction<typeof ActionType.CLEAR_CHOICES>;
 export declare const addChoice: (choice: ChoiceFull) => AddChoiceAction;
 export declare const removeChoice: (choice: ChoiceFull) => RemoveChoiceAction;
 export declare const filterChoices: (results: SearchResult<ChoiceFull>[]) => FilterChoicesAction;

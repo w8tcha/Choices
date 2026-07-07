@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-cycle
 import { ChoiceFull } from './choice-full';
 
 export interface GroupFull {

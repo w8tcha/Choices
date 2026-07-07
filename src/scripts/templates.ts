@@ -22,7 +22,6 @@ import { NoticeType, NoticeTypes, TemplateOptions, Templates as TemplatesInterfa
 import { StringUntrusted } from './interfaces/string-untrusted';
 
 const isEmptyObject = (obj: object): boolean => {
-  // eslint-disable-next-line no-restricted-syntax
   for (const prop in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, prop)) {
       return false;
@@ -374,7 +373,6 @@ const templates: TemplatesInterface = {
     addClassesToElement(notice, itemChoice);
     addClassesToElement(notice, noticeItem);
 
-    // eslint-disable-next-line default-case
     switch (type) {
       case NoticeTypes.addChoice:
         addClassesToElement(notice, addChoice);

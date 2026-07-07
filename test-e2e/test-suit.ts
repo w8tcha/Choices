@@ -174,7 +174,6 @@ export class TestSuit {
     await expect(this.dropdown.locator('.choices__notice')).toBeHidden();
   }
 
-  // eslint-disable-next-line class-methods-use-this
   getWrappedElement(): Locator {
     throw new Error('Not implemented');
   }
@@ -195,7 +194,6 @@ export class TestSuit {
     await expect(this.items).toHaveCount(count);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async crossProcessLock(func: () => Promise<void>): Promise<void> {
     // playwright lacks clipboard isolation, so use a lock to ensure other tests don't modify the clipboard at the same time
     // https://github.com/microsoft/playwright/issues/13097#issuecomment-1445271511

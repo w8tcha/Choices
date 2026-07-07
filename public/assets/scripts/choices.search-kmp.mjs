@@ -315,7 +315,7 @@ var parseCustomProperties = function (customProperties) {
         try {
             return JSON.parse(customProperties);
         }
-        catch (e) {
+        catch (_a) {
             return customProperties;
         }
     }
@@ -871,7 +871,6 @@ var WrappedSelect = /** @class */ (function (_super) {
         });
         return choices;
     };
-    // eslint-disable-next-line class-methods-use-this
     WrappedSelect.prototype._optionToChoice = function (option) {
         // option.value returns the label if there is no value attribute, which can break legacy placeholder attribute support
         if (!option.hasAttribute('value') && option.hasAttribute('placeholder')) {
@@ -1092,7 +1091,6 @@ function groups(s, action) {
     return { state: state, update: update };
 }
 
-/* eslint-disable */
 function choices(s, action, context) {
     var state = s;
     var update = true;
@@ -1172,7 +1170,6 @@ var Store = /** @class */ (function () {
         this._context = context;
     }
     Object.defineProperty(Store.prototype, "defaultState", {
-        // eslint-disable-next-line class-methods-use-this
         get: function () {
             return {
                 groups: [],
@@ -1183,7 +1180,6 @@ var Store = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
-    // eslint-disable-next-line class-methods-use-this
     Store.prototype.changeSet = function (init) {
         return {
             groups: init,
@@ -1439,7 +1435,6 @@ function getSearcher(config) {
  * `Choices.defaults.templates` allows access to the default template methods from `callbackOnCreateTemplates`
  */
 var isEmptyObject = function (obj) {
-    // eslint-disable-next-line no-restricted-syntax
     for (var prop in obj) {
         if (Object.prototype.hasOwnProperty.call(obj, prop)) {
             return false;
@@ -1707,7 +1702,6 @@ var templates = {
         addClassesToElement(notice, item);
         addClassesToElement(notice, itemChoice);
         addClassesToElement(notice, noticeItem);
-        // eslint-disable-next-line default-case
         switch (type) {
             case NoticeTypes.addChoice:
                 addClassesToElement(notice, addChoice);
@@ -2234,7 +2228,6 @@ var Choices = /** @class */ (function () {
             var fetcher_1 = choicesArrayOrFetcher(this);
             if (typeof Promise === 'function' && fetcher_1 instanceof Promise) {
                 // that's a promise
-                // eslint-disable-next-line no-promise-executor-return
                 return new Promise(function (resolve) { return requestAnimationFrame(resolve); })
                     .then(function () { return _this._handleLoadingState(true); })
                     .then(function () { return fetcher_1; })
@@ -2655,7 +2648,6 @@ var Choices = /** @class */ (function () {
     /**
      * @deprecated Use utils.getChoiceForOutput
      */
-    // eslint-disable-next-line class-methods-use-this
     Choices.prototype._getChoiceForOutput = function (choice, keyCode) {
         return getChoiceForOutput(choice, keyCode);
     };

@@ -1,6 +1,6 @@
 import { StringUntrusted } from './string-untrusted';
 import { StringPreEscaped } from './string-pre-escaped';
-// eslint-disable-next-line import/no-cycle
+
 import { EventChoice } from './event-choice';
 
 export namespace Types {

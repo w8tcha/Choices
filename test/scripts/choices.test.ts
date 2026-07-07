@@ -1319,7 +1319,7 @@ describe('choices', () => {
           const fetcher = async (inst): Promise<InputChoice[]> => {
             expect(inst).to.eq(choice);
             fetcherCalled = true;
-            // eslint-disable-next-line no-promise-executor-return
+
             await new Promise((resolve) => setTimeout(resolve, 800));
 
             return [

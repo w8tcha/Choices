@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { beforeEach } from 'vitest';
 import Store from '../../../src/scripts/store/store';
-// eslint-disable-next-line import/no-named-default
+
 import { ActionType, State, default as Choices } from '../../../src';
 import { cloneObject } from '../../../src/scripts/lib/utils';
 import { AnyAction, StoreListener } from '../../../src/scripts/interfaces/store';

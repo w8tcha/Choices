@@ -4,14 +4,14 @@ import { InputGroup } from './input-group';
 /**
  * @deprecated Use InputChoice instead
  */
-export interface Item extends InputChoice {}
+export type Item = InputChoice;
 
 /**
  * @deprecated Use InputChoice instead
  */
-export interface Choice extends InputChoice {}
+export type Choice = InputChoice;
 
 /**
  * @deprecated Use InputGroup instead
  */
-export interface Group extends InputGroup {}
+export type Group = InputGroup;

@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { ActionType, Options, State } from '../interfaces';
 import { StateUpdate } from '../interfaces/store';
 import { ChoiceActions } from '../actions/choices';

@@ -34,7 +34,7 @@ import { NoticeType, NoticeTypes, Templates } from './interfaces/templates';
 import { isHtmlInputElement, isHtmlSelectElement } from './lib/html-guard-statements';
 import { Searcher } from './interfaces/search';
 import { getSearcher } from './search';
-// eslint-disable-next-line import/no-named-default
+
 import { default as defaultTemplates } from './templates';
 import { canUseDom } from './interfaces/build-flags';
 
@@ -703,7 +703,7 @@ class Choices {
 
       if (typeof Promise === 'function' && fetcher instanceof Promise) {
         // that's a promise
-        // eslint-disable-next-line no-promise-executor-return
+
         return new Promise((resolve) => requestAnimationFrame(resolve))
           .then(() => this._handleLoadingState(true))
           .then(() => fetcher)
@@ -1210,7 +1210,7 @@ class Choices {
   /**
    * @deprecated Use utils.getChoiceForOutput
    */
-  // eslint-disable-next-line class-methods-use-this
+
   _getChoiceForOutput(choice: ChoiceFull, keyCode?: number): EventChoice {
     return getChoiceForOutput(choice, keyCode);
   }
