@@ -1431,7 +1431,7 @@
 
     const _excluded = ["getFn"];
     /**
-     * Fuse.js v7.4.2 - Lightweight fuzzy-search (http://fusejs.io)
+     * Fuse.js v7.5.0 - Lightweight fuzzy-search (http://fusejs.io)
      *
      * Copyright (c) 2026 Kiro Risk (http://kiro.me)
      * All Rights Reserved. Apache Software License 2.0
@@ -1611,19 +1611,23 @@
 
     //#endregion
     //#region src/tools/fieldNorm.ts
+    function isWordSeparator(code) {
+      return code >= 9 && code <= 13 || code === 32 || code === 160;
+    }
     function norm(weight = 1, mantissa = 3) {
       const cache = /* @__PURE__ */new Map();
       const m = Math.pow(10, mantissa);
       return {
         get(value) {
-          let numTokens = 1;
-          let inSpace = false;
-          for (let i = 0; i < value.length; i++) if (value.charCodeAt(i) === 32) {
-            if (!inSpace) {
+          let numTokens = 0;
+          let inWord = false;
+          for (let i = 0; i < value.length; i++) if (!isWordSeparator(value.charCodeAt(i))) {
+            if (!inWord) {
               numTokens++;
-              inSpace = true;
+              inWord = true;
             }
-          } else inSpace = false;
+          } else inWord = false;
+          if (numTokens === 0) numTokens = 1;
           if (cache.has(numTokens)) return cache.get(numTokens);
           const n = Math.round(m / Math.pow(numTokens, .5 * weight)) / m;
           cache.set(numTokens, n);
@@ -2029,6 +2033,10 @@
         text = isCaseSensitive ? text : text.toLowerCase();
         text = ignoreDiacritics ? stripDiacritics(text) : text;
         if (this.pattern === text) {
+          if (text.length < this.options.minMatchCharLength) return {
+            isMatch: false,
+            score: 1
+          };
           const result = {
             isMatch: true,
             score: 0
@@ -2493,33 +2501,31 @@
     //#endregion
     //#region src/tools/MaxHeap.ts
     var MaxHeap = class {
-      constructor(limit) {
+      constructor(limit, comparator) {
         this.limit = limit;
         this.heap = [];
+        this.comparator = comparator;
       }
       get size() {
         return this.heap.length;
-      }
-      shouldInsert(score) {
-        return this.size < this.limit || score < this.heap[0].score;
       }
       insert(item) {
         if (this.size < this.limit) {
           this.heap.push(item);
           this._bubbleUp(this.size - 1);
-        } else if (item.score < this.heap[0].score) {
+        } else if (this.comparator(item, this.heap[0]) < 0) {
           this.heap[0] = item;
           this._sinkDown(0);
         }
       }
-      extractSorted(sortFn) {
-        return this.heap.sort(sortFn);
+      extractSorted() {
+        return this.heap.sort(this.comparator);
       }
       _bubbleUp(i) {
         const heap = this.heap;
         while (i > 0) {
           const parent = i - 1 >> 1;
-          if (heap[i].score <= heap[parent].score) break;
+          if (this.comparator(heap[i], heap[parent]) <= 0) break;
           const tmp = heap[i];
           heap[i] = heap[parent];
           heap[parent] = tmp;
@@ -2534,8 +2540,8 @@
           i = largest;
           const left = 2 * i + 1;
           const right = 2 * i + 2;
-          if (left < len && heap[left].score > heap[largest].score) largest = left;
-          if (right < len && heap[right].score > heap[largest].score) largest = right;
+          if (left < len && this.comparator(heap[left], heap[largest]) > 0) largest = left;
+          if (right < len && this.comparator(heap[right], heap[largest]) > 0) largest = right;
           if (largest !== i) {
             const tmp = heap[i];
             heap[i] = heap[largest];
@@ -2871,6 +2877,9 @@
       getIndex() {
         return this._myIndex;
       }
+      _normalizedKeys() {
+        return this._myIndex.keys.map(key => this._keyStore.get(key.id) || key);
+      }
       search(query, options) {
         const {
           limit = -1
@@ -2890,10 +2899,12 @@
           if (isNumber(limit) && limit > -1) docs = docs.slice(0, limit);
           return docs;
         }
-        const useHeap = isNumber(limit) && limit > 0 && isString(query);
+        const useHeap = shouldSort && isNumber(limit) && limit > 0 && isString(query);
+        const comparator = sortFn;
+        const stable = (a, b) => comparator(a, b) || a.idx - b.idx;
         let results;
         if (useHeap) {
-          const heap = new MaxHeap(limit);
+          const heap = new MaxHeap(limit, stable);
           if (isString(this._docs[0])) this._searchStringList(query, {
             heap,
             ignoreFieldNorm
@@ -2901,13 +2912,13 @@
             heap,
             ignoreFieldNorm
           });
-          results = heap.extractSorted(sortFn);
+          results = heap.extractSorted();
         } else {
           results = isString(query) ? isString(this._docs[0]) ? this._searchStringList(query) : this._searchObjectList(query) : this._searchLogical(query);
           computeScore(results, {
             ignoreFieldNorm
           });
-          if (shouldSort) results.sort(sortFn);
+          if (shouldSort) results.sort(isString(query) ? stable : comparator);
           if (isNumber(limit) && limit > -1) results = results.slice(0, limit);
         }
         return format(results, this._docs, {
@@ -2955,7 +2966,7 @@
                 result.score = computeScoreSingle(result.matches, {
                   ignoreFieldNorm
                 });
-                if (heap.shouldInsert(result.score)) heap.insert(result);
+                heap.insert(result);
               } else results.push(result);
             }
           }
@@ -2964,6 +2975,7 @@
       }
       _searchLogical(query) {
         const expression = parse(query, this.options);
+        const keys = this._normalizedKeys();
         const evaluate = (node, item, idx) => {
           if (!("children" in node)) {
             const {
@@ -2973,7 +2985,7 @@
             let matches;
             if (keyId === null) {
               matches = [];
-              this._myIndex.keys.forEach((key, keyIndex) => {
+              keys.forEach((key, keyIndex) => {
                 matches.push(...this._findMatches({
                   key,
                   value: item[keyIndex],
@@ -3039,9 +3051,9 @@
         const searcher = this._getSearcher(query);
         const requireAllTokens = this.options.useTokenSearch && this.options.tokenMatch === "all";
         const {
-          keys,
           records
         } = this._myIndex;
+        const keys = this._normalizedKeys();
         const results = heap ? null : [];
         records.forEach(({
           $: item,
@@ -3073,7 +3085,7 @@
               result.score = computeScoreSingle(result.matches, {
                 ignoreFieldNorm
               });
-              if (heap.shouldInsert(result.score)) heap.insert(result);
+              heap.insert(result);
             } else results.push(result);
           }
         });
@@ -3154,7 +3166,7 @@
 
     //#endregion
     //#region src/entry.ts
-    Fuse.version = "7.4.2";
+    Fuse.version = "7.5.0";
     Fuse.createIndex = createIndex;
     Fuse.parseIndex = parseIndex;
     Fuse.config = Config;
