@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { stub } from 'sinon';
+import { vi } from 'vitest';
 
 import {
   cloneObject,
@@ -143,7 +143,7 @@ describe('utils', () => {
   describe('dispatchEvent', () => {
     it('dispatches custom event of given type on given element', () => {
       const fakeElement = {
-        dispatchEvent: stub(),
+        dispatchEvent: vi.fn(),
       };
       const eventType = EventType.addItem;
       const customArgs = {
@@ -152,8 +152,8 @@ describe('utils', () => {
 
       dispatchEvent(fakeElement as any, eventType, customArgs);
 
-      expect(fakeElement.dispatchEvent.called).to.equal(true);
-      const event = fakeElement.dispatchEvent.lastCall.args[0];
+      expect(fakeElement.dispatchEvent.mock.calls).to.have.length(1);
+      const event = fakeElement.dispatchEvent.mock.calls[0][0];
       expect(event).to.be.instanceof(CustomEvent);
       expect(event.bubbles).to.equal(true);
       expect(event.cancelable).to.equal(true);

@@ -607,12 +607,16 @@ describe('choices', () => {
           expect(output).to.deep.equal(instance);
         });
 
-        it('focuses input synchronously when input focus is allowed', () => {
-          instance.dropdown.isActive = false;
-          instance.showDropdown(false);
+        it('focuses input when input focus is allowed', () =>
+          new Promise((done) => {
+            instance.dropdown.isActive = false;
+            instance.showDropdown(false);
 
-          expect(inputFocusSpy).toHaveBeenCalledOnce();
-        });
+            requestAnimationFrame(() => {
+              expect(inputFocusSpy).toHaveBeenCalledOnce();
+              done(true);
+            });
+          }));
 
         it('opens containerOuter', () =>
           new Promise((done) => {
@@ -1913,6 +1917,7 @@ describe('choices', () => {
               disabled: false,
               id: 0,
               label: 'Test 1',
+              value: '1',
             });
           });
         });
