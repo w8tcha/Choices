@@ -71,6 +71,7 @@
               const choicesBasic = new Choices('#choices-basic', {
                 allowHTML: false,
               });
+              window.choicesBasic = choicesBasic;
               document
                 .querySelector('button.disable')
                 .addEventListener('click', () => {

@@ -1,5 +1,14 @@
 # Changelog
 
+## [11.2.4] (2026-07-)
+
+### Bugfixes
+- Focus input synchronously to open iOS keyboard [#1373](https://github.com/Choices-js/Choices/issues/1373)
+- Fix addItemFilter config option regression from v10.2.0 [#1419](https://github.com/Choices-js/Choices/issues/1419)
+
+### Maintenance
+- Update unit test framework to vitest v4.1.10
+
 ## [11.2.3] (2026-04-30)
 
 ### Bugfixes

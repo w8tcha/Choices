@@ -1100,7 +1100,7 @@ choices.disable();
 
 **Usage:** Remove each selectable item.
 
-## removeChoice(value: string);
+### removeChoice(value: string);
 
 **Input types affected:** `text`, `select-multiple`, `select-one`
 

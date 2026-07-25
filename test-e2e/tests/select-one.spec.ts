@@ -27,6 +27,34 @@ describe(`Choices - select one`, () => {
         });
 
         describe('click selected element', () => {
+          test('focuses the search input before deferred dropdown layout', async ({ page, bundle }) => {
+            const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+            await suite.start();
+
+            const beforeFrame = await page.evaluate(() => {
+              const choices = (
+                window as unknown as {
+                  choicesBasic: {
+                    showDropdown: () => void;
+                    input: { element: HTMLInputElement };
+                    containerOuter: { element: HTMLElement };
+                  };
+                }
+              ).choicesBasic;
+              choices.showDropdown();
+
+              return {
+                inputFocused: document.activeElement === choices.input.element,
+                containerExpanded: choices.containerOuter.element.getAttribute('aria-expanded'),
+              };
+            });
+
+            expect(beforeFrame).toEqual({ inputFocused: true, containerExpanded: 'false' });
+            await expect(suite.dropdown).toBeVisible();
+            await suite.advanceClock();
+            await expect(suite.wrapper).toHaveAttribute('aria-expanded', 'true');
+          });
+
           test('toggles the dropdown', async ({ page, bundle }) => {
             const suite = new SelectTestSuit(page, bundle, testUrl, testId);
             await suite.startWithClick();

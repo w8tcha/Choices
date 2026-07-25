@@ -1,5 +1,4 @@
-import { expect } from 'chai';
-import { beforeEach } from 'vitest';
+import { expect, beforeEach } from 'vitest';
 import { DEFAULT_CONFIG } from '../../../src';
 import { cloneObject } from '../../../src/scripts/lib/utils';
 import { SearchByFuse } from '../../../src/scripts/search/fuse';
