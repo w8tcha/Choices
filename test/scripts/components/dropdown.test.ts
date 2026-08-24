@@ -69,12 +69,24 @@ describe('components/dropdown', () => {
       });
     });
 
-    it('sets expanded attribute', () => {
+    it('does not set an expanded attribute', () => {
       expect(instance).to.not.be.null;
       if (!instance) {
         return;
       }
-      expect(instance.element.getAttribute('aria-expanded')).to.equal('true');
+      expect(instance.element.hasAttribute('aria-expanded')).to.equal(false);
+    });
+
+    it('sets expanded attribute for select dropdowns', () => {
+      const selectInstance = new Dropdown({
+        element: choicesElement,
+        type: 'select-one',
+        classNames: DEFAULT_CLASSNAMES,
+      });
+
+      selectInstance.show();
+
+      expect(selectInstance.element.getAttribute('aria-expanded')).to.equal('true');
     });
 
     it('sets isActive instance flag', () => {
@@ -119,12 +131,24 @@ describe('components/dropdown', () => {
       });
     });
 
-    it('sets expanded attribute', () => {
+    it('does not set an expanded attribute', () => {
       expect(instance).to.not.be.null;
       if (!instance) {
         return;
       }
-      expect(instance.element.getAttribute('aria-expanded')).to.equal('false');
+      expect(instance.element.hasAttribute('aria-expanded')).to.equal(false);
+    });
+
+    it('sets expanded attribute for select dropdowns', () => {
+      const selectInstance = new Dropdown({
+        element: choicesElement,
+        type: 'select-one',
+        classNames: DEFAULT_CLASSNAMES,
+      });
+
+      selectInstance.hide();
+
+      expect(selectInstance.element.getAttribute('aria-expanded')).to.equal('false');
     });
 
     it('sets isActive instance flag', () => {

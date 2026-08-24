@@ -6,7 +6,7 @@
 
 import { ChoiceFull } from './interfaces/choice-full';
 import { GroupFull } from './interfaces/group-full';
-import { PassedElementType } from './interfaces/passed-element-type';
+import { PassedElementType, PassedElementTypes } from './interfaces/passed-element-type';
 import { StringPreEscaped } from './interfaces/string-pre-escaped';
 import {
   getClassNames,
@@ -351,12 +351,17 @@ const templates: TemplatesInterface = {
     return inp;
   },
 
-  dropdown({ classNames: { list, listDropdown } }: TemplateOptions): HTMLDivElement {
+  dropdown(
+    { classNames: { list, listDropdown } }: TemplateOptions,
+    passedElementType: PassedElementType,
+  ): HTMLDivElement {
     const div = document.createElement('div');
 
     addClassesToElement(div, list);
     addClassesToElement(div, listDropdown);
-    div.setAttribute('aria-expanded', 'false');
+    if (passedElementType !== PassedElementTypes.Text) {
+      div.setAttribute('aria-expanded', 'false');
+    }
 
     return div;
   },

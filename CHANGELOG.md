@@ -3,8 +3,10 @@
 ## [11.2.4] (2026-07-)
 
 ### Bugfixes
-- Focus input synchronously to open iOS keyboard [#1373](https://github.com/Choices-js/Choices/issues/1373)
+- Focus input synchronously to open iOS keyboard (Fix [#1373](https://github.com/Choices-js/Choices/issues/1373)) [#1418](https://github.com/Choices-js/Choices/issues/1418)
 - Fix addItemFilter config option regression from v10.2.0 [#1419](https://github.com/Choices-js/Choices/issues/1419)
+- Fix incorrect `aria-expanded` attribute for text backing field (Fix [#1016](https://github.com/Choices-js/Choices/issues/1016)) [#1391](https://github.com/Choices-js/Choices/issues/1391)
+- Fix arrow-key navigation did not start from the selected choice when no choice is currently highlighted [#1400](https://github.com/Choices-js/Choices/pull/1400)
 
 ### Maintenance
 - Update unit test framework to vitest v4.1.10

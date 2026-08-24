@@ -610,11 +610,20 @@ describe('templates', () => {
       listDropdown: 'class-2',
     });
 
-    it('returns expected html', () => {
+    it('returns expected html for select elements', () => {
       const expectedOutput = strToEl(
         `<div class="${getClassNames(dropdownOptions.classNames.list).join(' ')} ${getClassNames(dropdownOptions.classNames.listDropdown).join(' ')}" aria-expanded="false"></div>`,
       );
-      const actualOutput = templates.dropdown(dropdownOptions);
+      const actualOutput = templates.dropdown(dropdownOptions, 'select-one');
+
+      expectEqualElements(actualOutput, expectedOutput);
+    });
+
+    it('returns expected html for text inputs', () => {
+      const expectedOutput = strToEl(
+        `<div class="${getClassNames(dropdownOptions.classNames.list).join(' ')} ${getClassNames(dropdownOptions.classNames.listDropdown).join(' ')}"></div>`,
+      );
+      const actualOutput = templates.dropdown(dropdownOptions, 'text');
 
       expectEqualElements(actualOutput, expectedOutput);
     });
