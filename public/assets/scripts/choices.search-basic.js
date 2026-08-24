@@ -357,7 +357,9 @@
          */
         Dropdown.prototype.show = function () {
             addClassesToElement(this.element, this.classNames.activeState);
-            this.element.setAttribute('aria-expanded', 'true');
+            if (this.type !== PassedElementTypes.Text) {
+                this.element.setAttribute('aria-expanded', 'true');
+            }
             this.isActive = true;
             return this;
         };
@@ -366,7 +368,9 @@
          */
         Dropdown.prototype.hide = function () {
             removeClassesFromElement(this.element, this.classNames.activeState);
-            this.element.setAttribute('aria-expanded', 'false');
+            if (this.type !== PassedElementTypes.Text) {
+                this.element.setAttribute('aria-expanded', 'false');
+            }
             this.isActive = false;
             return this;
         };
@@ -3028,12 +3032,14 @@
             }
             return inp;
         },
-        dropdown: function (_a) {
+        dropdown: function (_a, passedElementType) {
             var _b = _a.classNames, list = _b.list, listDropdown = _b.listDropdown;
             var div = document.createElement('div');
             addClassesToElement(div, list);
             addClassesToElement(div, listDropdown);
-            div.setAttribute('aria-expanded', 'false');
+            if (passedElementType !== PassedElementTypes.Text) {
+                div.setAttribute('aria-expanded', 'false');
+            }
             return div;
         },
         notice: function (_a, innerHTML, type) {
@@ -4907,7 +4913,7 @@
                 element: templating.itemList(config, isSelectOneElement),
             });
             this.dropdown = new Dropdown({
-                element: templating.dropdown(config),
+                element: templating.dropdown(config, elementType),
                 classNames: classNames,
                 type: elementType,
             });
