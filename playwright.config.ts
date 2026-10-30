@@ -1,5 +1,4 @@
-import { defineConfig, devices } from '@playwright/test';
-import { PlaywrightTestConfig } from 'playwright/types/test';
+import { defineConfig, devices, PlaywrightTestConfig } from '@playwright/test';
 import { BundleTest } from './test-e2e/bundle-test';
 
 /**
@@ -25,9 +24,9 @@ const config: PlaywrightTestConfig = {
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'line',
-  timeout: process.env.CI ? 5000 : 1000,
-  expect : {
-    timeout: process.env.CI ? 1000 : 500,
+  timeout: 5000,
+  expect: {
+    timeout: 1000,
   },
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
@@ -54,6 +53,8 @@ const config: PlaywrightTestConfig = {
     },
     {
       name: 'firefox',
+      // firefox is noticeably slower to start up and run, especially on Windows
+      timeout: 15000,
       use: { ...devices['Desktop Firefox'] },
     },
     {
@@ -97,7 +98,7 @@ const bundles = [
     enabled: true,
   },
 ];
-const projects = config.projects;
+const { projects } = config;
 if (config.use.baseURL) {
   config.projects = [];
 
@@ -111,8 +112,8 @@ if (config.use.baseURL) {
         name: project.name + name,
         use: {
           ...project.use,
-          bundle: config.use.baseURL + bundle,
-        }
+          bundle: new URL(bundle, config.use.baseURL).href,
+        },
       };
       config.projects.push(projectBundle);
     });

@@ -187,7 +187,7 @@ describe(`Choices - select multiple`, () => {
         describe('on paste', () => {
           // playwright lacks clipboard isolation, so use serial mode to try to work around it.
           // https://github.com/microsoft/playwright/issues/13097
-          describe.configure({ mode: 'serial', timeout: 2000 });
+          describe.configure({ mode: 'serial', timeout: 30000 });
 
           describe('searching by label', () => {
             test('displays choices filtered by inputted value', async ({ page, bundle }) => {

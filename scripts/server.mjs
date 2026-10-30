@@ -1,7 +1,7 @@
 import dev from 'rollup-plugin-dev';
 
 export default function server() {
-  const WATCH_HOST = process.env.WATCH_HOST;
+  const { WATCH_HOST } = process.env;
 
   if (!WATCH_HOST) {
     return void 0;
@@ -15,4 +15,4 @@ export default function server() {
     force: !!process.env.CI,
     // silent: !!process.env.CI
   });
-};
+}

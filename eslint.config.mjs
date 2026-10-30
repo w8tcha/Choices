@@ -33,6 +33,10 @@ export default tseslint.config(
       },
     },
     settings: {
+      'import/resolver': {
+        typescript: true,
+        node: true,
+      },
       polyfills: [
         'Array.from',
         'Array.prototype.find',
@@ -52,6 +56,7 @@ export default tseslint.config(
       'no-param-reassign': ['error', { props: false }],
       '@typescript-eslint/explicit-function-return-type': 'error',
       'import/no-named-as-default': 'off',
+      'import/no-named-as-default-member': 'off',
       'import/prefer-default-export': 'off',
       'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
