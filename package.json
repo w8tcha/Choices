@@ -118,7 +118,7 @@
     "chai": "^6.2.2",
     "cross-process-lock": "^2.2.0",
     "csso-cli": "^4.0.2",
-    "eslint": "^9.39.5",
+    "eslint": "^10.13.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.5",
     "eslint-plugin-compat": "^7.0.2",
