@@ -386,7 +386,6 @@ class Choices {
     if (this.containerOuter.isDisabled) {
       this._addEventListeners();
       this.input.enable();
-      this.input.element.focus();
       this.containerOuter.enable();
     }
 
@@ -512,15 +511,16 @@ class Choices {
       preventInputFocus = !this._canSearch;
     }
 
+    // to ensure a virtual keyboard trigger as expected, the focus/animation must be started from the input event and not an animation frame which
+    this.dropdown.show();
+    const rect = this.dropdown.element.getBoundingClientRect();
+    this.containerOuter.open(rect.bottom, rect.height);
+
+    if (!preventInputFocus) {
+      this.input.focus();
+    }
+
     requestAnimationFrame(() => {
-      this.dropdown.show();
-      const rect = this.dropdown.element.getBoundingClientRect();
-      this.containerOuter.open(rect.bottom, rect.height);
-
-      if (!preventInputFocus) {
-        this.input.focus();
-      }
-
       this.passedElement.triggerEvent(EventType.showDropdown);
 
       const activeElement = this.choiceList.element.querySelector<HTMLElement>(
@@ -1847,9 +1847,9 @@ class Choices {
           nextEl = this.dropdown.element.querySelector(selectableChoiceIdentifier);
         }
       } else {
-        const currentEl = this.dropdown.element.querySelector<HTMLElement>(
-          getClassNamesSelector(this.config.classNames.highlightedState),
-        );
+        const currentEl: HTMLElement | null =
+          this.dropdown.element.querySelector(getClassNamesSelector(this.config.classNames.highlightedState)) ||
+          this.dropdown.element.querySelector(getClassNamesSelector(this.config.classNames.selectedState));
         if (currentEl) {
           nextEl = getAdjacentEl(currentEl, selectableChoiceIdentifier, directionInt);
         } else {
@@ -1965,8 +1965,8 @@ class Choices {
             this.input.focus();
           }
         } else {
-          this.showDropdown();
           containerOuter.element.focus();
+          this.showDropdown();
         }
       } else if (
         this._isSelectOneElement &&
