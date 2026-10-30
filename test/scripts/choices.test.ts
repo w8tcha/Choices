@@ -1869,14 +1869,14 @@ describe('choices', () => {
           instance._isSelectElement = true;
         });
 
-        it('removes loading state', () => {
-          instance.setChoices(choices, value, label, false);
+        it('removes loading state', async () => {
+          await instance.setChoices(choices, value, label, false);
           expect(containerOuterRemoveLoadingStateStub).toHaveBeenCalled();
         });
 
         describe('passing choices with children choices', () => {
-          it('adds groups', () => {
-            instance.setChoices(groups, value, label, false);
+          it('adds groups', async () => {
+            await instance.setChoices(groups, value, label, false);
             expect(addGroupStub).callCount(2);
             expect(addGroupStub).toHaveBeenNthCalledWith(1, {
               active: true,
@@ -1926,8 +1926,8 @@ describe('choices', () => {
           typeof arg === 'undefined' ? defaultValue : !!arg;
 
         describe('passing choices without children choices', () => {
-          it('adds passed choices', () => {
-            instance.setChoices(choices, value, label, false);
+          it('adds passed choices', async () => {
+            await instance.setChoices(choices, value, label, false);
             expect(addChoiceStub).callCount(2);
             choices.forEach((_v, index) => {
               expect(addChoiceStub).toHaveBeenNthCalledWith(index + 1, {
@@ -1951,31 +1951,31 @@ describe('choices', () => {
         });
 
         describe('passing an empty array with a true replaceChoices flag', () => {
-          it('choices are cleared', () => {
+          it('choices are cleared', async () => {
             instance._isSelectElement = true;
-            instance.setChoices([], value, label, true);
+            await instance.setChoices([], value, label, true);
             expect(clearChoicesStub).toHaveBeenCalled();
           });
         });
 
         describe('passing an empty array with a false replaceChoices flag', () => {
-          it('choices stay the same', () => {
+          it('choices stay the same', async () => {
             instance._isSelectElement = true;
-            instance.setChoices([], value, label, false);
+            await instance.setChoices([], value, label, false);
             expect(clearChoicesStub).not.toHaveBeenCalled();
           });
         });
 
         describe('passing true replaceChoices flag', () => {
-          it('choices are cleared', () => {
-            instance.setChoices(choices, value, label, true);
+          it('choices are cleared', async () => {
+            await instance.setChoices(choices, value, label, true);
             expect(clearChoicesStub).toHaveBeenCalled();
           });
         });
 
         describe('passing false replaceChoices flag', () => {
-          it('choices are not cleared', () => {
-            instance.setChoices(choices, value, label, false);
+          it('choices are not cleared', async () => {
+            await instance.setChoices(choices, value, label, false);
             expect(clearChoicesStub).not.toHaveBeenCalled();
           });
         });
