@@ -646,6 +646,34 @@
           </script>
         </div>
 
+        <div data-test-hook="remote-search">
+          <label for="choices-remote-search">Remote search</label>
+          <select
+            class="form-control"
+            name="choices-remote-search"
+            id="choices-remote-search"
+            multiple
+          ></select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              const remoteSearch = new Choices('#choices-remote-search', {
+                allowHTML: false,
+                shouldSort: false,
+              });
+
+              // the choices of a search are loaded from the server (the input is disabled while they load)
+              remoteSearch.passedElement.element.addEventListener('search', function(event) {
+                if (event.detail.value.length > 2) {
+                  remoteSearch.setChoices(async () => {
+                    const data = await fetch('../data.json');
+                    return data.json();
+                  }, 'value', 'label', true);
+                }
+              });
+            });
+          </script>
+        </div>
+
         <div data-test-hook="scrolling-dropdown">
           <label for="choices-scrolling-dropdown">Scrolling dropdown</label>
           <select

@@ -1356,6 +1356,59 @@ describe('choices', () => {
             prop2: false,
           });
         });
+
+        it('keeps the input enabled while the choices of a search (input with the focus) are loaded', async () => {
+          document.body.innerHTML = '<select id="test" multiple></select>';
+          const choice = new Choices('#test', { allowHTML: false });
+
+          choice.input.element.focus();
+          expect(choice.input.isFocussed).to.equal(true);
+
+          let resolveData: (data: InputChoice[]) => void = () => {};
+          const promise = choice.setChoices(
+            () => new Promise<InputChoice[]>((resolve) => (resolveData = resolve)),
+            'value',
+            'label',
+            true,
+          );
+
+          await new Promise((resolve) => requestAnimationFrame(resolve));
+          await Promise.resolve();
+
+          // disabling the input removed its focus, the keys typed while loading were lost
+          expect(choice.containerOuter.element.classList).toContain(choice.config.classNames.loadingState[0]);
+          expect(choice.input.isDisabled).to.equal(false);
+
+          resolveData([{ label: 'l1', value: 'v1' }]);
+          await promise;
+
+          expect(choice.input.isDisabled).to.equal(false);
+          expect(choice._store.choices[0].value).to.equal('v1');
+        });
+
+        it('disables the input while the choices are loaded without the focus', async () => {
+          document.body.innerHTML = '<select id="test" multiple></select>';
+          const choice = new Choices('#test', { allowHTML: false });
+
+          let resolveData: (data: InputChoice[]) => void = () => {};
+          const promise = choice.setChoices(
+            () => new Promise<InputChoice[]>((resolve) => (resolveData = resolve)),
+            'value',
+            'label',
+            true,
+          );
+
+          await new Promise((resolve) => requestAnimationFrame(resolve));
+          await Promise.resolve();
+
+          expect(choice.input.isDisabled).to.equal(true);
+
+          resolveData([{ label: 'l1', value: 'v1' }]);
+          await promise;
+
+          expect(choice.input.isDisabled).to.equal(false);
+          expect(document.activeElement).not.to.equal(choice.input.element);
+        });
       });
     });
 

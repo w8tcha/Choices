@@ -803,6 +803,35 @@ describe(`Choices - select multiple`, () => {
       });
     });
 
+    describe('remote search', () => {
+      const testId = 'remote-search';
+      test('keeps the input while the choices of the search are loaded', async ({ page, bundle }) => {
+        const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+        const stopJsonWaiting = await suite.delayData();
+        await suite.start();
+        await suite.selectByClick();
+
+        // the third key starts the loading, the input was disabled (and lost the focus) until the choices were loaded
+        await suite.input.pressSequentially('Lab');
+        await expect(suite.wrapper).toHaveClass(/is-loading/);
+
+        await expect(suite.input).toBeEnabled();
+        await expect(suite.input).toBeFocused();
+
+        // keys typed while the choices are loading
+        await page.keyboard.type('el');
+        await expect(suite.input).toHaveValue('Label');
+
+        const jsonLoad = page.waitForResponse('**/data.json');
+        stopJsonWaiting();
+        await jsonLoad;
+
+        await expect(suite.wrapper).not.toHaveClass(/is-loading/);
+        await expect(suite.input).toBeFocused();
+        await expect(suite.input).toHaveValue('Label');
+      });
+    });
+
     describe('scrolling dropdown', () => {
       const testId = 'scrolling-dropdown';
       test('shows partial choices list', async ({ page, bundle }) => {

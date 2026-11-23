@@ -135,6 +135,9 @@ class Choices {
 
   _isSearching: boolean;
 
+  /** the input had the focus when the loading of choices started (a search): it stays enabled while they load */
+  _keepInputWhileLoading = false;
+
   _placeholderValue: string | null;
 
   _baseId: string;
@@ -1372,7 +1375,12 @@ class Choices {
   _handleLoadingState(setLoading = true): void {
     const el = this.itemList.element;
     if (setLoading) {
-      this.disable();
+      // a search that loads its choices (e.g. from a server) while the user types keeps the input enabled:
+      // disabling it removed the focus and the keys typed while the choices were loading were lost
+      this._keepInputWhileLoading = this._keepInputWhileLoading || this.input.isFocussed;
+      if (!this._keepInputWhileLoading) {
+        this.disable();
+      }
       this.containerOuter.addLoadingState();
       if (this._isSelectOneElement) {
         el.replaceChildren(this._templates.placeholder(this.config, this.config.loadingText));
@@ -1380,7 +1388,11 @@ class Choices {
         this.input.placeholder = this.config.loadingText;
       }
     } else {
-      this.enable();
+      if (this._keepInputWhileLoading) {
+        this._keepInputWhileLoading = false;
+      } else {
+        this.enable();
+      }
       this.containerOuter.removeLoadingState();
 
       if (this._isSelectOneElement) {

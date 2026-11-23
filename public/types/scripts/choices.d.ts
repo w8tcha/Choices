@@ -48,6 +48,8 @@ declare class Choices {
     _highlightPosition: number;
     _wasTap: boolean;
     _isSearching: boolean;
+    /** the input had the focus when the loading of choices started (a search): it stays enabled while they load */
+    _keepInputWhileLoading: boolean;
     _placeholderValue: string | null;
     _baseId: string;
     _direction: HTMLElement['dir'];
